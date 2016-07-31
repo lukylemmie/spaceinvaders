@@ -219,7 +219,9 @@ public class Game extends Canvas {
 		
 		// if we waited long enough, create the shot entity, and record the time.
 		lastFire = System.currentTimeMillis();
-		ShotEntity shot = new ShotEntity(this,"sprites/shot.gif",ship.getX()+10,ship.getY()-30);
+		ShotEntity shot = new ShotEntity(this,"sprites/shot.gif",ship.getX(),ship.getY()-30);
+		entities.add(shot);
+		shot = new ShotEntity(this,"sprites/shot.gif",ship.getX()+20,ship.getY()-30);
 		entities.add(shot);
 	}
 	
