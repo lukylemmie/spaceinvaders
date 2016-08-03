@@ -280,9 +280,13 @@ public class Game extends Canvas {
 
         // if we waited long enough, create the shot entity, and record the time.
         lastFire = System.currentTimeMillis();
-        ShotEntity shot = new ShotEntity(this, "sprites/shot.gif", ship.getX(), ship.getY() - 30);
+        ShotEntity shot = new ShotEntity(this, "sprites/shot.gif", ship.getX(), ship.getY());
+        shot.adjustX(-shot.getImageWidth()/2);
+        shot.adjustY(-shot.getImageHeight());
         entities.add(shot);
-        shot = new ShotEntity(this, "sprites/shot.gif", ship.getX() + 20, ship.getY() - 30);
+        shot = new ShotEntity(this, "sprites/shot.gif", ship.getX() + ship.getImageWidth(), ship.getY());
+        shot.adjustX(-shot.getImageWidth()/2);
+        shot.adjustY(-shot.getImageHeight());
         entities.add(shot);
     }
 
@@ -366,7 +370,7 @@ public class Game extends Canvas {
             if (waitingForKeyPress) {
                 g.setColor(Color.white);
                 g.drawString(message, (MAX_X - g.getFontMetrics().stringWidth(message)) / 2, 250);
-                g.drawString("Press any key", (MAX_X - g.getFontMetrics().stringWidth("Press any key")) / 2, 300);
+                g.drawString("Press any key to start, Press ESC to quit", (MAX_X - g.getFontMetrics().stringWidth("Press any key to start, Press ESC to quit")) / 2, 300);
             }
 
             // finally, we've completed drawing so clear up the graphics
