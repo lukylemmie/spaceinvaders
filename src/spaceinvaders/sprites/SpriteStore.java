@@ -16,7 +16,7 @@ import java.util.HashMap;
  * [singleton]
  * <p>
  *
- * @author Kevin Glass
+ * @author Original code base - Kevin Glass, refactors - Andrew Lem
  */
 public class SpriteStore {
     /**

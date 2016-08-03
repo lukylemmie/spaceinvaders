@@ -9,7 +9,7 @@ import java.awt.*;
  * lots of different places without having to store multiple
  * copies of the image.
  *
- * @author Kevin Glass
+ * @author Original code base - Kevin Glass, refactors - Andrew Lem
  */
 public class Sprite {
     /**

@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * detect events (e.g. alient killed, played died) and will take
  * appropriate game actions.
  *
- * @author Kevin Glass
+ * @author Original code base - Kevin Glass, refactors - Andrew Lem
  */
 public class Game extends Canvas {
     public static final int MAX_X = 800;
