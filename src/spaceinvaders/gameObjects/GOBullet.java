@@ -3,26 +3,27 @@ package spaceinvaders.gameObjects;
 import spaceinvaders.Game;
 
 /**
- * A gameObject representing a shot fired by the player's ship
+ * A gameObject representing a bullet fired by the player's ship
  *
  * @author Andrew Lem
  */
-public class ShotGameObject extends GameObject {
-    public static final int DEFAULT_SHOT_MOVE_SPEED = -300;
-    public static final String SPRITES_SHOT_GIF = "sprites/shot.gif";
-    private double moveSpeed = DEFAULT_SHOT_MOVE_SPEED;
+public class GOBullet extends GameObject {
+    public static final int DEFAULT_BULLET_MOVE_SPEED = -300;
+    public static final String SPRITES_BULLET_GIF = "sprites/bullet.gif";
+    public static final int BULLET_ON_SCREEN = -100;
+    private double moveSpeed = DEFAULT_BULLET_MOVE_SPEED;
     private Game game;
-    private boolean used = false;
+    private int uses = 1;
 
     /**
-     * Create a new shot from the player
+     * Create a new bullet from the player
      *
-     * @param game   The game in which the shot has been created
-     * @param sprite The sprite representing this shot
-     * @param x      The initial x location of the shot
-     * @param y      The initial y location of the shot
+     * @param game   The game in which the bullet has been created
+     * @param sprite The sprite representing this bullet
+     * @param x      The initial x location of the bullet
+     * @param y      The initial y location of the bullet
      */
-    public ShotGameObject(Game game, String sprite, int x, int y) {
+    public GOBullet(Game game, String sprite, int x, int y) {
         super(sprite, x, y);
 
         this.game = game;
@@ -31,7 +32,7 @@ public class ShotGameObject extends GameObject {
     }
 
     /**
-     * Request that this shot moved based on time elapsed
+     * Request that this bullet moved based on time elapsed
      *
      * @param delta The time that has elapsed since last move
      */
@@ -39,14 +40,19 @@ public class ShotGameObject extends GameObject {
         // proceed with normal move
         super.move(delta);
 
-        // if we shot off the screen, remove ourselves
-        if (y < -100) {
+        // TODO move this logic to game
+        // if bullet has moved off the screen then remove bullet
+        if (isOffScreen()) {
             game.removeGameObject(this);
         }
     }
 
+    public boolean isOffScreen(){
+        return y < BULLET_ON_SCREEN;
+    }
+
     /**
-     * Notification that this shot has collided with another
+     * Notification that this bullet has collided with another
      * entity
      *
      * @parma other The other entity with which we've collided
@@ -54,7 +60,7 @@ public class ShotGameObject extends GameObject {
     public void collidedWith(GameObject other) {
         // prevents double kills, if we've already hit something,
         // don't collide
-        if (used) {
+        if (uses < 1) {
             return;
         }
 
@@ -67,7 +73,7 @@ public class ShotGameObject extends GameObject {
             // notify the game that the alien has been killed
             game.notifyAlienKilled();
             game.removeAlien((AlienGameObject) other);
-            used = true;
+            uses--;
         }
     }
 }

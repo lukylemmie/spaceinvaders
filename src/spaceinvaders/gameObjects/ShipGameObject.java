@@ -23,11 +23,11 @@ public class ShipGameObject extends GameObject {
     private double moveSpeed = DEFAULT_SHIP_MOVE_SPEED;
 
     /**
-     * The time at which last fired a shot
+     * The time at which last fired a bullet
      */
     private long lastFire = 0;
     /**
-     * The interval between our players shot (ms)
+     * The interval between our players bullet (ms)
      */
     private long firingInterval = DEFAULT_FIRING_INTERVAL;
 
@@ -92,9 +92,9 @@ public class ShipGameObject extends GameObject {
     }
 
     /**
-     * Attempt to fire a shot from the player. Its called "try"
+     * Attempt to fire a bullet from the player. Its called "try"
      * since we must first check that the player can fire at this
-     * point, i.e. has he/she waited long enough between shots
+     * point, i.e. has he/she waited long enough between bullets
      */
     public void tryToFire() {
         // check that we have waiting long enough to fire
@@ -102,15 +102,15 @@ public class ShipGameObject extends GameObject {
             return;
         }
 
-        // if we waited long enough, create the shot entity, and record the time.
+        // if we waited long enough, create the bullet entity, and record the time.
         lastFire = System.currentTimeMillis();
-        ShotGameObject shot = new ShotGameObject(game, ShotGameObject.SPRITES_SHOT_GIF, getX(), getY());
-        shot.adjustX(-shot.getImageWidth()/2);
-        shot.adjustY(-shot.getImageHeight());
-        game.addToEntities(shot);
-        shot = new ShotGameObject(game, ShotGameObject.SPRITES_SHOT_GIF, getX() + getImageWidth(), getY());
-        shot.adjustX(-shot.getImageWidth()/2);
-        shot.adjustY(-shot.getImageHeight());
-        game.addToEntities(shot);
+        GOBullet bullet = new GOBullet(game, GOBullet.SPRITES_BULLET_GIF, getX(), getY());
+        bullet.adjustX(-bullet.getImageWidth()/2);
+        bullet.adjustY(-bullet.getImageHeight());
+        game.addToEntities(bullet);
+        bullet = new GOBullet(game, GOBullet.SPRITES_BULLET_GIF, getX() + getImageWidth(), getY());
+        bullet.adjustX(-bullet.getImageWidth()/2);
+        bullet.adjustY(-bullet.getImageHeight());
+        game.addToEntities(bullet);
     }
 }

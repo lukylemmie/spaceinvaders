@@ -97,11 +97,7 @@ public abstract class GameObject {
         return me.intersects(him);
     }
 
-    /**
-     * Notification that this entity collided with another.
-     *
-     * @param other The entity with which this entity collided.
-     */
+    // TODO Refactor to boolean
     public abstract void collidedWith(GameObject other);
 
     public int getImageWidth(){
