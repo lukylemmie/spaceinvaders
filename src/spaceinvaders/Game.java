@@ -299,7 +299,7 @@ public class Game extends Canvas {
      *
      * @param gameObject The gameObject that should be removed
      */
-    public void removeEntity(GameObject gameObject) {
+    public void removeGameObject(GameObject gameObject) {
         removeList.add(gameObject);
     }
 

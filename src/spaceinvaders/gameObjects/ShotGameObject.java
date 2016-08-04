@@ -3,24 +3,15 @@ package spaceinvaders.gameObjects;
 import spaceinvaders.Game;
 
 /**
- * An entity representing a shot fired by the player's ship
+ * A gameObject representing a shot fired by the player's ship
  *
- * @author Original code base - Kevin Glass, refactors - Andrew Lem
+ * @author Andrew Lem
  */
 public class ShotGameObject extends GameObject {
     public static final int DEFAULT_SHOT_MOVE_SPEED = -300;
     public static final String SPRITES_SHOT_GIF = "sprites/shot.gif";
-    /**
-     * The vertical speed at which the players shot moves
-     */
     private double moveSpeed = DEFAULT_SHOT_MOVE_SPEED;
-    /**
-     * The game in which this entity exists
-     */
     private Game game;
-    /**
-     * True if this shot has been "used", i.e. its hit something
-     */
     private boolean used = false;
 
     /**
@@ -48,9 +39,9 @@ public class ShotGameObject extends GameObject {
         // proceed with normal move
         super.move(delta);
 
-        // if we shot off the screen, remove ourselfs
+        // if we shot off the screen, remove ourselves
         if (y < -100) {
-            game.removeEntity(this);
+            game.removeGameObject(this);
         }
     }
 
@@ -69,9 +60,9 @@ public class ShotGameObject extends GameObject {
 
         // if we've hit an alien, kill it!
         if (other instanceof AlienGameObject) {
-            // remove the affected entities
-            game.removeEntity(this);
-            game.removeEntity(other);
+            // remove the affected gameObjects
+            game.removeGameObject(this);
+            game.removeGameObject(other);
 
             // notify the game that the alien has been killed
             game.notifyAlienKilled();
