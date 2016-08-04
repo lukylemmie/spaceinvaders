@@ -1,4 +1,4 @@
-package spaceinvaders.entities;
+package spaceinvaders.gameObjects;
 
 import spaceinvaders.Game;
 
@@ -7,10 +7,11 @@ import spaceinvaders.Game;
  *
  * @author Original code base - Kevin Glass, refactors - Andrew Lem
  */
-public class AlienEntity extends Entity {
+public class AlienGameObject extends GameObject {
     public static final int DEFAULT_ALIEN_MOVE_SPEED = 75;
+    public static final double DEFAULT_ALIEN_MOVE_SPEED_INCREASE = 1.02;
     /**
-     * The speed at which the alient moves horizontally
+     * The speed at which the alien moves horizontally
      */
     private double moveSpeed = DEFAULT_ALIEN_MOVE_SPEED;
     /**
@@ -23,10 +24,10 @@ public class AlienEntity extends Entity {
      *
      * @param game The game in which this entity is being created
      * @param ref  The sprite which should be displayed for this alien
-     * @param x    The intial x location of this alien
-     * @param y    The intial y location of this alient
+     * @param x    The initial x location of this alien
+     * @param y    The initial y location of this alien
      */
-    public AlienEntity(Game game, String ref, int x, int y) {
+    public AlienGameObject(Game game, String ref, int x, int y) {
         super(ref, x, y);
 
         this.game = game;
@@ -75,7 +76,11 @@ public class AlienEntity extends Entity {
      *
      * @param other The other entity
      */
-    public void collidedWith(Entity other) {
+    public void collidedWith(GameObject other) {
         // collisions with aliens are handled elsewhere
+    }
+
+    public void increaseMovementSpeed() {
+        setHorizontalMovement(getHorizontalMovement() * DEFAULT_ALIEN_MOVE_SPEED_INCREASE);
     }
 }

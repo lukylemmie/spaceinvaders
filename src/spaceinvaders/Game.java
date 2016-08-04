@@ -1,8 +1,8 @@
 package spaceinvaders;
 
-import spaceinvaders.entities.AlienEntity;
-import spaceinvaders.entities.Entity;
-import spaceinvaders.entities.ShipEntity;
+import spaceinvaders.gameObjects.AlienGameObject;
+import spaceinvaders.gameObjects.GameObject;
+import spaceinvaders.gameObjects.ShipGameObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,10 +45,10 @@ public class Game extends Canvas {
      */
     private BufferStrategy strategy;
     private boolean gameRunning = true;
-    private ArrayList<Entity> entities = new ArrayList<>();
-    private ArrayList<AlienEntity> aliens = new ArrayList<>();
-    private ArrayList<Entity> removeList = new ArrayList<>();
-    private ShipEntity ship;
+    private ArrayList<GameObject> entities = new ArrayList<>();
+    private ArrayList<AlienGameObject> aliens = new ArrayList<>();
+    private ArrayList<GameObject> removeList = new ArrayList<>();
+    private ShipGameObject ship;
     private int alienCount;
 
     /**
@@ -136,7 +136,7 @@ public class Game extends Canvas {
      */
     private void initEntities() {
         // create the player ship and place it roughly in the center of the screen
-        ship = new ShipEntity(this, "sprites/ship.gif", (MAX_X - SCREEN_EDGE_BUFFER) / 2, MAX_Y - SCREEN_EDGE_BUFFER);
+        ship = new ShipGameObject(this, "sprites/ship.gif", (MAX_X - SCREEN_EDGE_BUFFER) / 2, MAX_Y - SCREEN_EDGE_BUFFER);
         entities.add(ship);
 
         // create a block of aliens (5 rows, by 12 aliens, spaced evenly)
@@ -144,7 +144,7 @@ public class Game extends Canvas {
         aliens.clear();
         for (int row = 0; row < DEFAULT_ALIENS_ROWS; row++) {
             for (int x = 0; x < DEFAULT_ALIENS_PER_ROW; x++) {
-                AlienEntity alien = new AlienEntity(this, "sprites/alien.gif",
+                AlienGameObject alien = new AlienGameObject(this, "sprites/alien.gif",
                         DEFAULT_ALIEN_LEFT_EDGE_X + (x * DEFAULT_ALIEN_GAP_X),
                         DEFAULT_ALIEN_TOP_EDGE_Y + row * DEFAULT_ALIEN_GAP_Y);
                 entities.add(alien);
@@ -200,17 +200,17 @@ public class Game extends Canvas {
             // cycle round asking each entity to move itself
             if (!waitingForKeyPress) {
                 for (int i = 0; i < entities.size(); i++) {
-                    Entity entity = (Entity) entities.get(i);
+                    GameObject gameObject = (GameObject) entities.get(i);
 
-                    entity.move(delta);
+                    gameObject.move(delta);
                 }
             }
 
             // cycle round drawing all the entities we have in the game
             for (int i = 0; i < entities.size(); i++) {
-                Entity entity = (Entity) entities.get(i);
+                GameObject gameObject = (GameObject) entities.get(i);
 
-                entity.draw(g);
+                gameObject.draw(g);
             }
 
             // brute force collisions, compare every entity against
@@ -218,8 +218,8 @@ public class Game extends Canvas {
             // both entities that the collision has occurred
             for (int p = 0; p < entities.size(); p++) {
                 for (int s = p + 1; s < entities.size(); s++) {
-                    Entity me = (Entity) entities.get(p);
-                    Entity him = (Entity) entities.get(s);
+                    GameObject me = (GameObject) entities.get(p);
+                    GameObject him = (GameObject) entities.get(s);
 
                     if (me.collidesWith(him)) {
                         me.collidedWith(him);
@@ -237,8 +237,8 @@ public class Game extends Canvas {
             // their personal logic should be considered.
             if (logicRequiredThisLoop) {
                 for (int i = 0; i < entities.size(); i++) {
-                    Entity entity = entities.get(i);
-                    entity.doLogic();
+                    GameObject gameObject = entities.get(i);
+                    gameObject.doLogic();
                 }
 
                 logicRequiredThisLoop = false;
@@ -294,13 +294,13 @@ public class Game extends Canvas {
     }
 
     /**
-     * Remove an entity from the game. The entity removed will
+     * Remove an gameObject from the game. The gameObject removed will
      * no longer move or be drawn.
      *
-     * @param entity The entity that should be removed
+     * @param gameObject The gameObject that should be removed
      */
-    public void removeEntity(Entity entity) {
-        removeList.add(entity);
+    public void removeEntity(GameObject gameObject) {
+        removeList.add(gameObject);
     }
 
     /**
@@ -333,16 +333,16 @@ public class Game extends Canvas {
 
         // if there are still some aliens left then they all need to get faster, so
         // speed up all the existing aliens
-        for(AlienEntity alien : aliens){
+        for(AlienGameObject alien : aliens){
             alien.increaseMovementSpeed();
         }
     }
 
-    public void addToEntities(Entity entity) {
-        entities.add(entity);
+    public void addToEntities(GameObject gameObject) {
+        entities.add(gameObject);
     }
 
-    public void removeAlien(AlienEntity alien) {
+    public void removeAlien(AlienGameObject alien) {
         aliens.remove(alien);
     }
 

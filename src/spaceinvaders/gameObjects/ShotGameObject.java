@@ -1,4 +1,4 @@
-package spaceinvaders.entities;
+package spaceinvaders.gameObjects;
 
 import spaceinvaders.Game;
 
@@ -7,8 +7,9 @@ import spaceinvaders.Game;
  *
  * @author Original code base - Kevin Glass, refactors - Andrew Lem
  */
-public class ShotEntity extends Entity {
+public class ShotGameObject extends GameObject {
     public static final int DEFAULT_SHOT_MOVE_SPEED = -300;
+    public static final String SPRITES_SHOT_GIF = "sprites/shot.gif";
     /**
      * The vertical speed at which the players shot moves
      */
@@ -30,7 +31,7 @@ public class ShotEntity extends Entity {
      * @param x      The initial x location of the shot
      * @param y      The initial y location of the shot
      */
-    public ShotEntity(Game game, String sprite, int x, int y) {
+    public ShotGameObject(Game game, String sprite, int x, int y) {
         super(sprite, x, y);
 
         this.game = game;
@@ -59,7 +60,7 @@ public class ShotEntity extends Entity {
      *
      * @parma other The other entity with which we've collided
      */
-    public void collidedWith(Entity other) {
+    public void collidedWith(GameObject other) {
         // prevents double kills, if we've already hit something,
         // don't collide
         if (used) {
@@ -67,13 +68,14 @@ public class ShotEntity extends Entity {
         }
 
         // if we've hit an alien, kill it!
-        if (other instanceof AlienEntity) {
+        if (other instanceof AlienGameObject) {
             // remove the affected entities
             game.removeEntity(this);
             game.removeEntity(other);
 
             // notify the game that the alien has been killed
             game.notifyAlienKilled();
+            game.removeAlien((AlienGameObject) other);
             used = true;
         }
     }
