@@ -50,7 +50,6 @@ public class Game extends Canvas {
     private ArrayList<GOEnemy> enemies = new ArrayList<>();
     private ArrayList<GameObject> removeList = new ArrayList<>();
     private ShipGameObject ship;
-    private int enemyCount;
 
     /**
      * The message to display which waiting for a key press
@@ -141,7 +140,6 @@ public class Game extends Canvas {
         gameObjects.add(ship);
 
         // create a block of enemies (5 rows, by 12 enemies, spaced evenly)
-        enemyCount = 0;
         enemies.clear();
         for (int row = 0; row < DEFAULT_ENEMIES_ROWS; row++) {
             for (int x = 0; x < DEFAULT_ENEMIES_PER_ROW; x++) {
@@ -150,7 +148,6 @@ public class Game extends Canvas {
                         DEFAULT_ENEMY_TOP_EDGE_Y + row * DEFAULT_ENEMY_GAP_Y);
                 gameObjects.add(enemy);
                 enemies.add(enemy);
-                enemyCount++;
             }
         }
     }
@@ -325,8 +322,8 @@ public class Game extends Canvas {
      * Notification that an enemy has been killed
      */
     public void notifyEnemyKilled() {
-        // reduce the enemy count, if there are none left, the player has won!
-        enemyCount--;
+
+        System.out.println(enemies.size());
 
         if (enemies.isEmpty()) {
             notifyWin();
