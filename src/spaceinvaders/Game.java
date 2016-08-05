@@ -2,7 +2,7 @@ package spaceinvaders;
 
 import spaceinvaders.gameObjects.GOEnemy;
 import spaceinvaders.gameObjects.GameObject;
-import spaceinvaders.gameObjects.ShipGameObject;
+import spaceinvaders.gameObjects.GOShip;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,7 +49,7 @@ public class Game extends Canvas {
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
     private ArrayList<GOEnemy> enemies = new ArrayList<>();
     private ArrayList<GameObject> removeList = new ArrayList<>();
-    private ShipGameObject ship;
+    private GOShip ship;
 
     /**
      * The message to display which waiting for a key press
@@ -136,7 +136,7 @@ public class Game extends Canvas {
      */
     private void initGameObjects() {
         // create the player ship and place it roughly in the center of the screen
-        ship = new ShipGameObject(this, "sprites/ship.gif", (MAX_X - SCREEN_EDGE_INNER_BUFFER) / 2, MAX_Y - SCREEN_EDGE_INNER_BUFFER);
+        ship = new GOShip(this, "sprites/ship.gif", (MAX_X - SCREEN_EDGE_INNER_BUFFER) / 2, MAX_Y - SCREEN_EDGE_INNER_BUFFER);
         gameObjects.add(ship);
 
         // create a block of enemies (5 rows, by 12 enemies, spaced evenly)

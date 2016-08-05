@@ -9,7 +9,7 @@ import static spaceinvaders.Game.MAX_X;
  *
  * @author Andrew Lem
  */
-public class ShipGameObject extends GameObject {
+public class GOShip extends GameObject {
     public static final int DEFAULT_SHIP_MOVE_SPEED = 300;
     public static final int DEFAULT_FIRING_INTERVAL = 500;
     private double moveSpeed = DEFAULT_SHIP_MOVE_SPEED;
@@ -24,7 +24,7 @@ public class ShipGameObject extends GameObject {
      * @param x    The initial x location of the player's ship
      * @param y    The initial y location of the player's ship
      */
-    public ShipGameObject(Game game, String ref, int x, int y) {
+    public GOShip(Game game, String ref, int x, int y) {
         super(game, ref, x, y);
     }
 
