@@ -15,19 +15,7 @@ import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 
 /**
- * The main hook of our game. This class with both act as a manager
- * for the display and central mediator for the game logic.
- * <p>
- * Display management will consist of a loop that cycles round all
- * gameObjects in the game asking them to move and then drawing them
- * in the appropriate place. With the help of an inner class it
- * will also allow the player to control the main ship.
- * <p>
- * As a mediator it will be informed when gameObjects within our game
- * detect events (e.g. enemy killed, played died) and will take
- * appropriate game actions.
- *
- * @author Original code base - Kevin Glass, refactors - Andrew Lem
+ * @author Andrew Lem
  */
 public class Game extends Canvas {
     public static final int MAX_X = 800;
@@ -169,118 +157,124 @@ public class Game extends Canvas {
     public void gameLoop() {
         // keep looping round til the game ends
         while (gameRunning) {
-            // work out how long its been since the last update, this
-            // will be used to calculate how far the gameObjects should
-            // move this loop
-            long delta = System.currentTimeMillis() - lastLoopTime;
-            lastLoopTime = System.currentTimeMillis();
+            moveAndDrawGraphics();
+            checkForCollisions();
+            processUserInput();
+            sleepForFPS();
 
-            // Get hold of a graphics context for the accelerated
-            // surface and blank it out
-            Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
-            g.setColor(Color.black);
-            g.fillRect(0, 0, MAX_X, MAX_Y);
-
-            // cycle round asking each gameObject to move and draw itself
-            if (waitingForKeyPress) {
-                delta = 0;
-            }
-            ship.move(delta);
-            ship.draw(g);
-            for (GOEnemy enemy : enemies){
-                enemy.move(delta);
-                enemy.draw(g);
-            }
-            for (GOBullet bullet : bullets){
-                bullet.move(delta);
-                if (bullet.isOffScreen()) {
-                    removeBullets.add(bullet);
-                }
-                bullet.draw(g);
-            }
-
-            for (GOEnemy enemy : enemies){
-                for (GOBullet bullet : bullets){
-                    if (bullet.collidesWith(enemy)) {
-                        bullet.bulletHitsEnemy(enemy);
-                    }
-                    if (enemy.isDead()){
-                        if (!removeEnemies.contains(enemy)) {
-                            removeEnemies.add(enemy);
-                        }
-                    }
-                    if (bullet.isUsed()){
-                        if (!removeBullets.contains(bullet)) {
-                            removeBullets.add(bullet);
-                        }
-                    }
-                }
-
-                if(ship.collidesWith(enemy)) {
-                    notifyDeath();
-                }
-            }
-
-            // remove any gameObject that has been marked for clear up
-            enemies.removeAll(removeEnemies);
-            for (GOEnemy enemy : removeEnemies){
-                enemyFormation.remove(enemy);
-                notifyEnemyKilled();
-            }
-            removeEnemies.clear();
-            bullets.removeAll(removeBullets);
-            removeBullets.clear();
-
-            // if we're waiting for an "any key" press then draw the current message
-            if (waitingForKeyPress) {
-                g.setColor(Color.white);
-                g.drawString(message, (MAX_X - g.getFontMetrics().stringWidth(message)) / 2, MAX_Y / 2 - SCREEN_EDGE_INNER_BUFFER);
-                g.drawString(USER_INPUT_PROMPT,
-                        (MAX_X - g.getFontMetrics().stringWidth("Press any key to start, Press ESC to quit")) / 2, MAX_Y / 2);
-            }
-
-            // finally, we've completed drawing so clear up the graphics and flip the buffer over
-            g.dispose();
-            strategy.show();
-
-            // resolve the movement of the ship. First assume the ship
-            // isn't moving. If either cursor key is pressed then
-            // update the movement appropriately
-            ship.moveStop();
-
-            if ((leftPressed) && (!rightPressed)) {
-                ship.moveLeft();
-            } else if ((rightPressed) && (!leftPressed)) {
-                ship.moveRight();
-            }
-
-            // if we're pressing fire, attempt to fire
-            if (firePressed) {
-                ship.tryToFire();
-            }
-
-            // finally pause for a bit. Note: this should run us at about
-            // 100 fps but on windows this might vary each loop due to
-            // a bad implementation of timer
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-            }
         }
     }
 
-    /**
-     * Notification that the player has died.
-     */
+    private void sleepForFPS() {
+        // finally pause for a bit. Note: this should run us at about
+        // 100 fps but on windows this might vary each loop due to
+        // a bad implementation of timer
+        try {
+            Thread.sleep(10);
+        } catch (Exception e) {
+        }
+    }
+
+    private void moveAndDrawGraphics() {
+        // work out how long its been since the last update, this will be used to calculate how far the gameObjects
+        // should move this loop
+        long delta = System.currentTimeMillis() - lastLoopTime;
+        lastLoopTime = System.currentTimeMillis();
+
+        // Get hold of a graphics context for the accelerated
+        // surface and blank it out
+        Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
+        g.setColor(Color.black);
+        g.fillRect(0, 0, MAX_X, MAX_Y);
+
+        // cycle round asking each gameObject to move and draw itself
+        if (waitingForKeyPress) {
+            delta = 0;
+        }
+        ship.move(delta);
+        ship.draw(g);
+        for (GOEnemy enemy : enemies){
+            enemy.move(delta);
+            enemy.draw(g);
+        }
+        for (GOBullet bullet : bullets){
+            bullet.move(delta);
+            if (bullet.isOffScreen()) {
+                removeBullets.add(bullet);
+            }
+            bullet.draw(g);
+        }
+
+        // if we're waiting for an "any key" press then draw the current message
+        if (waitingForKeyPress) {
+            g.setColor(Color.white);
+            g.drawString(message, (MAX_X - g.getFontMetrics().stringWidth(message)) / 2, MAX_Y / 2 - SCREEN_EDGE_INNER_BUFFER);
+            g.drawString(USER_INPUT_PROMPT,
+                    (MAX_X - g.getFontMetrics().stringWidth("Press any key to start, Press ESC to quit")) / 2, MAX_Y / 2);
+        }
+
+        // finally, we've completed drawing so clear up the graphics and flip the buffer over
+        g.dispose();
+        strategy.show();
+    }
+
+    private void processUserInput() {
+        // resolve the movement of the ship. First assume the ship
+        // isn't moving. If either cursor key is pressed then
+        // update the movement appropriately
+        ship.moveStop();
+
+        if ((leftPressed) && (!rightPressed)) {
+            ship.moveLeft();
+        } else if ((rightPressed) && (!leftPressed)) {
+            ship.moveRight();
+        }
+
+        // if we're pressing fire, attempt to fire
+        if (firePressed) {
+            ship.tryToFire();
+        }
+    }
+
+    private void checkForCollisions() {
+        for (GOEnemy enemy : enemies){
+            for (GOBullet bullet : bullets){
+                if (bullet.collidesWith(enemy)) {
+                    bullet.bulletHitsEnemy(enemy);
+                }
+                if (enemy.isDead()){
+                    if (!removeEnemies.contains(enemy)) {
+                        removeEnemies.add(enemy);
+                    }
+                }
+                if (bullet.isUsed()){
+                    if (!removeBullets.contains(bullet)) {
+                        removeBullets.add(bullet);
+                    }
+                }
+            }
+
+            if(ship.collidesWith(enemy)) {
+                notifyDeath();
+            }
+        }
+
+        // remove any gameObject that has been marked for clear up
+        enemies.removeAll(removeEnemies);
+        for (GOEnemy enemy : removeEnemies){
+            enemyFormation.remove(enemy);
+            notifyEnemyKilled();
+        }
+        removeEnemies.clear();
+        bullets.removeAll(removeBullets);
+        removeBullets.clear();
+    }
+
     public void notifyDeath() {
         message = "Oh no! They got you, try again?";
         waitingForKeyPress = true;
     }
 
-    /**
-     * Notification that the player has won since all the enemies
-     * are dead.
-     */
     public void notifyWin() {
         message = "Well done! You Win!";
         waitingForKeyPress = true;
@@ -291,10 +285,6 @@ public class Game extends Canvas {
             notifyWin();
         }
         enemyFormation.increaseMovementSpeed();
-    }
-
-    public void removeEnemy(GOEnemy enemy) {
-        enemyFormation.remove(enemy);
     }
 
     public long getLastLoopTime() {
