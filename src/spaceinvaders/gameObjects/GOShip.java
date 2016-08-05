@@ -49,19 +49,6 @@ public class GOShip extends GameObject {
         super.move(delta);
     }
 
-    /**
-     * Notification that the player's ship has collided with something
-     *
-     * @param other The gameObject with which the ship has collided
-     */
-    public void collidedWith(GameObject other) {
-        // if its an enemy, notify the game that the player
-        // is dead
-        if (other instanceof GOEnemy) {
-            game.notifyDeath();
-        }
-    }
-
     public void moveStop(){
         setHorizontalMovement(0);
     }
@@ -89,7 +76,6 @@ public class GOShip extends GameObject {
         GOBullet bullet = new GOBullet(game, GOBullet.SPRITES_BULLET_GIF, getX() + getImageWidth()/2, getY());
         bullet.adjustX(-bullet.getImageWidth()/2);
         bullet.adjustY(-bullet.getImageHeight());
-        game.addToGameObjects(bullet);
         game.addBullet(bullet);
     }
 }

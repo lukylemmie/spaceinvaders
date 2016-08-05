@@ -97,9 +97,6 @@ public abstract class GameObject {
         return me.intersects(him);
     }
 
-    // TODO Refactor to boolean
-    public abstract void collidedWith(GameObject other);
-
     public int getImageWidth(){
         return sprite.getWidth();
     }

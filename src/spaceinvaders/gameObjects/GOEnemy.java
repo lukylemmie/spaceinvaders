@@ -10,7 +10,7 @@ import spaceinvaders.Game;
  */
 public class GOEnemy extends GameObject {
     public static final int DEFAULT_ENEMY_MOVE_SPEED = 75;
-    public static final double DEFAULT_ENEMY_MOVE_SPEED_INCREASE = 1.02;
+    public static final double DEFAULT_ENEMY_MOVE_SPEED_INCREASE = 1.03;
 
     private double moveSpeed = DEFAULT_ENEMY_MOVE_SPEED;
     private EnemyFormation enemyFormation;

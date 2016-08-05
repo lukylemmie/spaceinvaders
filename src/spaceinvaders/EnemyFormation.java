@@ -29,7 +29,6 @@ public class EnemyFormation {
                         DEFAULT_ENEMY_LEFT_EDGE_X + (x * DEFAULT_ENEMY_GAP_X),
                         DEFAULT_ENEMY_TOP_EDGE_Y + row * DEFAULT_ENEMY_GAP_Y,
                         this);
-                game.addToGameObjects(enemy);
                 game.addEnemy(enemy);
                 enemies.add(enemy);
             }

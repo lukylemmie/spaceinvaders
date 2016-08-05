@@ -43,12 +43,10 @@ public class Game extends Canvas {
     private boolean gameRunning = true;
 
     private long lastLoopTime = System.currentTimeMillis();
-    private ArrayList<GameObject> gameObjects = new ArrayList<>();
-    private ArrayList<GameObject> removeGameObjects = new ArrayList<>();
-    private ArrayList<GOBullet> bullets = new ArrayList<>();
-    private ArrayList<GOBullet> removeBullets = new ArrayList<>();
     private ArrayList<GOEnemy> enemies = new ArrayList<>();
     private ArrayList<GOEnemy> removeEnemies = new ArrayList<>();
+    private ArrayList<GOBullet> bullets = new ArrayList<>();
+    private ArrayList<GOBullet> removeBullets = new ArrayList<>();
     private EnemyFormation enemyFormation;
     private GOShip ship;
 
@@ -136,9 +134,10 @@ public class Game extends Canvas {
      * gameObject will be added to the overall list of gameObjects in the game.
      */
     private void initGameObjects() {
+        enemies.clear();
+        bullets.clear();
         // create the player ship and place it roughly in the center of the screen
         ship = new GOShip(this, "sprites/ship.gif", (MAX_X - SCREEN_EDGE_INNER_BUFFER) / 2, MAX_Y - SCREEN_EDGE_INNER_BUFFER);
-        gameObjects.add(ship);
         enemyFormation = new EnemyFormation(this, 1);
     }
 
@@ -147,8 +146,7 @@ public class Game extends Canvas {
      * create a new set.
      */
     private void startGame() {
-        // clear out any existing gameObjects and intialise a new set
-        gameObjects.clear();
+        // clear out any existing gameObjects and initialise a new set
         initGameObjects();
 
         // blank out any keyboard settings we might currently have
@@ -184,60 +182,54 @@ public class Game extends Canvas {
             g.fillRect(0, 0, MAX_X, MAX_Y);
 
             // cycle round asking each gameObject to move and draw itself
-            if (!waitingForKeyPress) {
-                for (GameObject gameObject : gameObjects){
-                    gameObject.move(delta);
+            if (waitingForKeyPress) {
+                delta = 0;
+            }
+            ship.move(delta);
+            ship.draw(g);
+            for (GOEnemy enemy : enemies){
+                enemy.move(delta);
+                enemy.draw(g);
+            }
+            for (GOBullet bullet : bullets){
+                bullet.move(delta);
+                if (bullet.isOffScreen()) {
+                    removeBullets.add(bullet);
                 }
+                bullet.draw(g);
             }
 
-            for (GameObject gameObject : gameObjects){
-                gameObject.draw(g);
-            }
-
-            // brute force collisions, compare every gameObject against
-            // every other gameObject. If any of them collide notify
-            // both gameObjects that the collision has occurred
-            for (int p = 0; p < gameObjects.size(); p++) {
-                for (int s = p + 1; s < gameObjects.size(); s++) {
-                    GameObject me = gameObjects.get(p);
-                    GameObject him = gameObjects.get(s);
-
-                    if (me.collidesWith(him)) {
-                        me.collidedWith(him);
-                        him.collidedWith(me);
+            for (GOEnemy enemy : enemies){
+                for (GOBullet bullet : bullets){
+                    if (bullet.collidesWith(enemy)) {
+                        bullet.bulletHitsEnemy(enemy);
+                    }
+                    if (enemy.isDead()){
+                        if (!removeEnemies.contains(enemy)) {
+                            removeEnemies.add(enemy);
+                        }
+                    }
+                    if (bullet.isUsed()){
+                        if (!removeBullets.contains(bullet)) {
+                            removeBullets.add(bullet);
+                        }
                     }
                 }
+
+                if(ship.collidesWith(enemy)) {
+                    notifyDeath();
+                }
             }
 
-
-//            for (GOEnemy enemy : enemies){
-//                for (GOBullet bullet : bullets){
-//                    if (bullet.collidesWith(enemy)) {
-//                        bullet.bulletHitsEnemy(enemy);
-//                    }
-//                    if (enemy.isDead()){
-//                        removeGameObjects.add(enemy);
-//                        removeEnemies.add(enemy);
-//                        notifyEnemyKilled();
-//                    }
-//                    if (bullet.isUsed()){
-//                        removeGameObjects.add(bullet);
-//                        removeBullets.add(bullet);
-//                    }
-//                }
-//
-//                if(ship.collidesWith(enemy)) {
-//                    ship.collidedWith(enemy);
-//                }
-//            }
-
             // remove any gameObject that has been marked for clear up
-            gameObjects.removeAll(removeGameObjects);
-            removeGameObjects.clear();
-//            enemies.removeAll(removeEnemies);
-//            removeEnemies.clear();
-//            bullets.removeAll(removeBullets);
-//            removeBullets.clear();
+            enemies.removeAll(removeEnemies);
+            for (GOEnemy enemy : removeEnemies){
+                enemyFormation.remove(enemy);
+                notifyEnemyKilled();
+            }
+            removeEnemies.clear();
+            bullets.removeAll(removeBullets);
+            removeBullets.clear();
 
             // if we're waiting for an "any key" press then draw the current message
             if (waitingForKeyPress) {
@@ -278,16 +270,6 @@ public class Game extends Canvas {
     }
 
     /**
-     * Remove an gameObject from the game. The gameObject removed will
-     * no longer move or be drawn.
-     *
-     * @param gameObject The gameObject that should be removed
-     */
-    public void removeGameObject(GameObject gameObject) {
-        removeGameObjects.add(gameObject);
-    }
-
-    /**
      * Notification that the player has died.
      */
     public void notifyDeath() {
@@ -309,10 +291,6 @@ public class Game extends Canvas {
             notifyWin();
         }
         enemyFormation.increaseMovementSpeed();
-    }
-
-    public void addToGameObjects(GameObject gameObject) {
-        gameObjects.add(gameObject);
     }
 
     public void removeEnemy(GOEnemy enemy) {
