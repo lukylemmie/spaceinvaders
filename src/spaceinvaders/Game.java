@@ -33,12 +33,6 @@ public class Game extends Canvas {
     public static final int MAX_Y = 600;
     public static final int SCREEN_EDGE_INNER_BUFFER = 50;
     public static final int SCREEN_EDGE_OUTER_BUFFER = 100;
-    public static final int DEFAULT_ENEMIES_PER_ROW = 12;
-    public static final int DEFAULT_ENEMIES_ROWS = 5;
-    public static final int DEFAULT_ENEMY_LEFT_EDGE_X = 100;
-    public static final int DEFAULT_ENEMY_GAP_X = 50;
-    public static final int DEFAULT_ENEMY_GAP_Y = 30;
-    public static final int DEFAULT_ENEMY_TOP_EDGE_Y = 50;
     public static final String USER_INPUT_PROMPT = "Press any key to start, Press ESC to quit";
 
     /**
@@ -47,8 +41,8 @@ public class Game extends Canvas {
     private BufferStrategy strategy;
     private boolean gameRunning = true;
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
-    private ArrayList<GOEnemy> enemies = new ArrayList<>();
     private ArrayList<GameObject> removeList = new ArrayList<>();
+    private EnemyFormation enemyFormation;
     private GOShip ship;
 
     /**
@@ -138,18 +132,7 @@ public class Game extends Canvas {
         // create the player ship and place it roughly in the center of the screen
         ship = new GOShip(this, "sprites/ship.gif", (MAX_X - SCREEN_EDGE_INNER_BUFFER) / 2, MAX_Y - SCREEN_EDGE_INNER_BUFFER);
         gameObjects.add(ship);
-
-        // create a block of enemies (5 rows, by 12 enemies, spaced evenly)
-        enemies.clear();
-        for (int row = 0; row < DEFAULT_ENEMIES_ROWS; row++) {
-            for (int x = 0; x < DEFAULT_ENEMIES_PER_ROW; x++) {
-                GOEnemy enemy = new GOEnemy(this, "sprites/enemy.gif",
-                        DEFAULT_ENEMY_LEFT_EDGE_X + (x * DEFAULT_ENEMY_GAP_X),
-                        DEFAULT_ENEMY_TOP_EDGE_Y + row * DEFAULT_ENEMY_GAP_Y);
-                gameObjects.add(enemy);
-                enemies.add(enemy);
-            }
-        }
+        enemyFormation = new EnemyFormation(this, 1);
     }
 
     /**
@@ -198,7 +181,7 @@ public class Game extends Canvas {
             // cycle round asking each gameObject to move itself
             if (!waitingForKeyPress) {
                 for (int i = 0; i < gameObjects.size(); i++) {
-                    GameObject gameObject = (GameObject) gameObjects.get(i);
+                    GameObject gameObject = gameObjects.get(i);
 
                     gameObject.move(delta);
                 }
@@ -206,18 +189,19 @@ public class Game extends Canvas {
 
             // cycle round drawing all the gameObjects we have in the game
             for (int i = 0; i < gameObjects.size(); i++) {
-                GameObject gameObject = (GameObject) gameObjects.get(i);
+                GameObject gameObject = gameObjects.get(i);
 
                 gameObject.draw(g);
             }
 
+            // TODO refactor collision checks, just need to check player and bullets
             // brute force collisions, compare every gameObject against
             // every other gameObject. If any of them collide notify
             // both gameObjects that the collision has occurred
             for (int p = 0; p < gameObjects.size(); p++) {
                 for (int s = p + 1; s < gameObjects.size(); s++) {
-                    GameObject me = (GameObject) gameObjects.get(p);
-                    GameObject him = (GameObject) gameObjects.get(s);
+                    GameObject me = gameObjects.get(p);
+                    GameObject him = gameObjects.get(s);
 
                     if (me.collidesWith(him)) {
                         me.collidedWith(him);
@@ -230,6 +214,7 @@ public class Game extends Canvas {
             gameObjects.removeAll(removeList);
             removeList.clear();
 
+            // TODO refactor: remove logic statments
             // if a game event has indicated that game logic should
             // be resolved, cycle round every gameObject requesting that
             // their personal logic should be considered.
@@ -322,15 +307,10 @@ public class Game extends Canvas {
      * Notification that an enemy has been killed
      */
     public void notifyEnemyKilled() {
-        if (enemies.isEmpty()) {
+        if (enemyFormation.isEmpty()) {
             notifyWin();
         }
-
-        // if there are still some enemies left then they all need to get faster, so
-        // speed up all the existing enemies
-        for(GOEnemy enemy : enemies){
-            enemy.increaseMovementSpeed();
-        }
+        enemyFormation.increaseMovementSpeed();
     }
 
     public void addToGameObjects(GameObject gameObject) {
@@ -338,7 +318,7 @@ public class Game extends Canvas {
     }
 
     public void removeEnemy(GOEnemy enemy) {
-        enemies.remove(enemy);
+        enemyFormation.remove(enemy);
     }
 
     /**

@@ -11,7 +11,7 @@ import static spaceinvaders.Game.MAX_X;
  */
 public class GOShip extends GameObject {
     public static final int DEFAULT_SHIP_MOVE_SPEED = 300;
-    public static final int DEFAULT_FIRING_INTERVAL = 500;
+    public static final int DEFAULT_FIRING_INTERVAL = 100;
     private double moveSpeed = DEFAULT_SHIP_MOVE_SPEED;
     private long lastFireTime = 0;
     private long firingInterval = DEFAULT_FIRING_INTERVAL;
