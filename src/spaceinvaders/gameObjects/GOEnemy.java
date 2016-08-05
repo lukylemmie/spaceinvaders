@@ -36,38 +36,13 @@ public class GOEnemy extends GameObject {
      * @param delta The time that has elapsed since last move
      */
     public void move(long delta) {
-        // if we have reached the left hand side of the screen and
-        // are moving left then request a logic update
-        // TODO refactor this to an enemy formation class
-        if ((dx < 0) && (x < 10)) {
-            game.updateLogic();
-        }
-        // and vice vesa, if we have reached the right hand side of
-        // the screen and are moving right, request a logic update
-        // TODO refactor this to an enemy formation class
-        if ((dx > 0) && (x > Game.MAX_X - Game.SCREEN_EDGE_INNER_BUFFER)) {
-            game.updateLogic();
+        // if enemy reaches edge of screen, enemyFormation advances and turns around
+        if (((dx < 0) && (x < 10)) || ((dx > 0) && (x > Game.MAX_X - Game.SCREEN_EDGE_INNER_BUFFER))) {
+            enemyFormation.advanceAndChangeDirection();
         }
 
         // proceed with normal move
         super.move(delta);
-    }
-
-    /**
-     * Update the game logic related to enemies
-     */
-    // TODO refactor this to an enemy formation class
-    public void doLogic() {
-        // swap over horizontal movement and move down the
-        // screen a bit
-        dx = -dx;
-        y += 10;
-
-        // if we've reached the bottom of the screen then the player
-        // dies
-        if (y > Game.MAX_Y - Game.SCREEN_EDGE_INNER_BUFFER) {
-            game.notifyDeath();
-        }
     }
 
     /**
@@ -81,5 +56,14 @@ public class GOEnemy extends GameObject {
 
     public void increaseMovementSpeed() {
         setHorizontalMovement(getHorizontalMovement() * DEFAULT_ENEMY_MOVE_SPEED_INCREASE);
+    }
+
+    public void advance() {
+        dx = -dx;
+        y += 10;
+
+        if (y > Game.MAX_Y - Game.SCREEN_EDGE_INNER_BUFFER) {
+            game.notifyDeath();
+        }
     }
 }

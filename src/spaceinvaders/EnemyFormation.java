@@ -17,7 +17,7 @@ public class EnemyFormation {
 
     private Game game;
     private ArrayList<GOEnemy> enemies = new ArrayList<>();
-    private int moveDirection = GOEnemy.DEFAULT_ENEMY_MOVE_SPEED;
+    private long directionChangeTime = 0;
 
     public EnemyFormation(Game game, int level){
         this.game = game;
@@ -46,6 +46,16 @@ public class EnemyFormation {
     public void increaseMovementSpeed() {
         for(GOEnemy enemy : enemies){
             enemy.increaseMovementSpeed();
+        }
+    }
+
+    public void advanceAndChangeDirection(){
+        if(directionChangeTime != game.getLastLoopTime()){
+            directionChangeTime = game.getLastLoopTime();
+
+            for(GOEnemy enemy : enemies){
+                enemy.advance();
+            }
         }
     }
 }
