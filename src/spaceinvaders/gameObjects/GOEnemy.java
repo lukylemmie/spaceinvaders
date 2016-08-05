@@ -3,31 +3,31 @@ package spaceinvaders.gameObjects;
 import spaceinvaders.Game;
 
 /**
- * An gameObject which represents one of our space invader aliens.
+ * An gameObject which represents an enemy.
  *
  * @author Original code base - Kevin Glass, refactors - Andrew Lem
  */
-public class AlienGameObject extends GameObject {
-    public static final int DEFAULT_ALIEN_MOVE_SPEED = 75;
-    public static final double DEFAULT_ALIEN_MOVE_SPEED_INCREASE = 1.02;
+public class GOEnemy extends GameObject {
+    public static final int DEFAULT_ENEMY_MOVE_SPEED = 75;
+    public static final double DEFAULT_ENEMY_MOVE_SPEED_INCREASE = 1.02;
     /**
-     * The speed at which the alien moves horizontally
+     * The speed at which the enemy moves horizontally
      */
-    private double moveSpeed = DEFAULT_ALIEN_MOVE_SPEED;
+    private double moveSpeed = DEFAULT_ENEMY_MOVE_SPEED;
     /**
      * The game in which the gameObject exists
      */
     private Game game;
 
     /**
-     * Create a new alien gameObject
+     * Create a new enemy gameObject
      *
      * @param game The game in which this gameObject is being created
-     * @param ref  The sprite which should be displayed for this alien
-     * @param x    The initial x location of this alien
-     * @param y    The initial y location of this alien
+     * @param ref  The sprite which should be displayed for this enemy
+     * @param x    The initial x location of this enemy
+     * @param y    The initial y location of this enemy
      */
-    public AlienGameObject(Game game, String ref, int x, int y) {
+    public GOEnemy(Game game, String ref, int x, int y) {
         super(ref, x, y);
 
         this.game = game;
@@ -35,7 +35,7 @@ public class AlienGameObject extends GameObject {
     }
 
     /**
-     * Request that this alien moved based on time elapsed
+     * Request that this enemy moved based on time elapsed
      *
      * @param delta The time that has elapsed since last move
      */
@@ -47,7 +47,7 @@ public class AlienGameObject extends GameObject {
         }
         // and vice vesa, if we have reached the right hand side of
         // the screen and are moving right, request a logic update
-        if ((dx > 0) && (x > Game.MAX_X - Game.SCREEN_EDGE_BUFFER)) {
+        if ((dx > 0) && (x > Game.MAX_X - Game.SCREEN_EDGE_INNER_BUFFER)) {
             game.updateLogic();
         }
 
@@ -56,7 +56,7 @@ public class AlienGameObject extends GameObject {
     }
 
     /**
-     * Update the game logic related to aliens
+     * Update the game logic related to enemies
      */
     public void doLogic() {
         // swap over horizontal movement and move down the
@@ -66,21 +66,21 @@ public class AlienGameObject extends GameObject {
 
         // if we've reached the bottom of the screen then the player
         // dies
-        if (y > Game.MAX_Y - Game.SCREEN_EDGE_BUFFER) {
+        if (y > Game.MAX_Y - Game.SCREEN_EDGE_INNER_BUFFER) {
             game.notifyDeath();
         }
     }
 
     /**
-     * Notification that this alien has collided with another gameObject
+     * Notification that this enemy has collided with another gameObject
      *
      * @param other The other gameObject
      */
     public void collidedWith(GameObject other) {
-        // collisions with aliens are handled elsewhere
+        // collisions with enemies are handled elsewhere
     }
 
     public void increaseMovementSpeed() {
-        setHorizontalMovement(getHorizontalMovement() * DEFAULT_ALIEN_MOVE_SPEED_INCREASE);
+        setHorizontalMovement(getHorizontalMovement() * DEFAULT_ENEMY_MOVE_SPEED_INCREASE);
     }
 }

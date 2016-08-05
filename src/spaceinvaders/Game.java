@@ -1,6 +1,6 @@
 package spaceinvaders;
 
-import spaceinvaders.gameObjects.AlienGameObject;
+import spaceinvaders.gameObjects.GOEnemy;
 import spaceinvaders.gameObjects.GameObject;
 import spaceinvaders.gameObjects.ShipGameObject;
 
@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * will also allow the player to control the main ship.
  * <p>
  * As a mediator it will be informed when gameObjects within our game
- * detect events (e.g. alien killed, played died) and will take
+ * detect events (e.g. enemy killed, played died) and will take
  * appropriate game actions.
  *
  * @author Original code base - Kevin Glass, refactors - Andrew Lem
@@ -31,13 +31,14 @@ import java.util.ArrayList;
 public class Game extends Canvas {
     public static final int MAX_X = 800;
     public static final int MAX_Y = 600;
-    public static final int SCREEN_EDGE_BUFFER = 50;
-    public static final int DEFAULT_ALIENS_PER_ROW = 12;
-    public static final int DEFAULT_ALIENS_ROWS = 5;
-    public static final int DEFAULT_ALIEN_LEFT_EDGE_X = 100;
-    public static final int DEFAULT_ALIEN_GAP_X = 50;
-    public static final int DEFAULT_ALIEN_GAP_Y = 30;
-    public static final int DEFAULT_ALIEN_TOP_EDGE_Y = 50;
+    public static final int SCREEN_EDGE_INNER_BUFFER = 50;
+    public static final int SCREEN_EDGE_OUTER_BUFFER = 100;
+    public static final int DEFAULT_ENEMIES_PER_ROW = 12;
+    public static final int DEFAULT_ENEMIES_ROWS = 5;
+    public static final int DEFAULT_ENEMY_LEFT_EDGE_X = 100;
+    public static final int DEFAULT_ENEMY_GAP_X = 50;
+    public static final int DEFAULT_ENEMY_GAP_Y = 30;
+    public static final int DEFAULT_ENEMY_TOP_EDGE_Y = 50;
     public static final String USER_INPUT_PROMPT = "Press any key to start, Press ESC to quit";
 
     /**
@@ -46,10 +47,10 @@ public class Game extends Canvas {
     private BufferStrategy strategy;
     private boolean gameRunning = true;
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
-    private ArrayList<AlienGameObject> aliens = new ArrayList<>();
+    private ArrayList<GOEnemy> enemies = new ArrayList<>();
     private ArrayList<GameObject> removeList = new ArrayList<>();
     private ShipGameObject ship;
-    private int alienCount;
+    private int enemyCount;
 
     /**
      * The message to display which waiting for a key press
@@ -131,25 +132,25 @@ public class Game extends Canvas {
     }
 
     /**
-     * Initialise the starting state of the gameObjects (ship and aliens). Each
+     * Initialise the starting state of the gameObjects (ship and enemies). Each
      * gameObject will be added to the overall list of gameObjects in the game.
      */
     private void initGameObjects() {
         // create the player ship and place it roughly in the center of the screen
-        ship = new ShipGameObject(this, "sprites/ship.gif", (MAX_X - SCREEN_EDGE_BUFFER) / 2, MAX_Y - SCREEN_EDGE_BUFFER);
+        ship = new ShipGameObject(this, "sprites/ship.gif", (MAX_X - SCREEN_EDGE_INNER_BUFFER) / 2, MAX_Y - SCREEN_EDGE_INNER_BUFFER);
         gameObjects.add(ship);
 
-        // create a block of aliens (5 rows, by 12 aliens, spaced evenly)
-        alienCount = 0;
-        aliens.clear();
-        for (int row = 0; row < DEFAULT_ALIENS_ROWS; row++) {
-            for (int x = 0; x < DEFAULT_ALIENS_PER_ROW; x++) {
-                AlienGameObject alien = new AlienGameObject(this, "sprites/alien.gif",
-                        DEFAULT_ALIEN_LEFT_EDGE_X + (x * DEFAULT_ALIEN_GAP_X),
-                        DEFAULT_ALIEN_TOP_EDGE_Y + row * DEFAULT_ALIEN_GAP_Y);
-                gameObjects.add(alien);
-                aliens.add(alien);
-                alienCount++;
+        // create a block of enemies (5 rows, by 12 enemies, spaced evenly)
+        enemyCount = 0;
+        enemies.clear();
+        for (int row = 0; row < DEFAULT_ENEMIES_ROWS; row++) {
+            for (int x = 0; x < DEFAULT_ENEMIES_PER_ROW; x++) {
+                GOEnemy enemy = new GOEnemy(this, "sprites/enemy.gif",
+                        DEFAULT_ENEMY_LEFT_EDGE_X + (x * DEFAULT_ENEMY_GAP_X),
+                        DEFAULT_ENEMY_TOP_EDGE_Y + row * DEFAULT_ENEMY_GAP_Y);
+                gameObjects.add(enemy);
+                enemies.add(enemy);
+                enemyCount++;
             }
         }
     }
@@ -248,7 +249,7 @@ public class Game extends Canvas {
             // current message
             if (waitingForKeyPress) {
                 g.setColor(Color.white);
-                g.drawString(message, (MAX_X - g.getFontMetrics().stringWidth(message)) / 2, MAX_Y / 2 - SCREEN_EDGE_BUFFER);
+                g.drawString(message, (MAX_X - g.getFontMetrics().stringWidth(message)) / 2, MAX_Y / 2 - SCREEN_EDGE_INNER_BUFFER);
                 g.drawString(USER_INPUT_PROMPT,
                         (MAX_X - g.getFontMetrics().stringWidth("Press any key to start, Press ESC to quit")) / 2, MAX_Y / 2);
             }
@@ -312,7 +313,7 @@ public class Game extends Canvas {
     }
 
     /**
-     * Notification that the player has won since all the aliens
+     * Notification that the player has won since all the enemies
      * are dead.
      */
     public void notifyWin() {
@@ -321,20 +322,20 @@ public class Game extends Canvas {
     }
 
     /**
-     * Notification that an alien has been killed
+     * Notification that an enemy has been killed
      */
-    public void notifyAlienKilled() {
-        // reduce the alien count, if there are none left, the player has won!
-        alienCount--;
+    public void notifyEnemyKilled() {
+        // reduce the enemy count, if there are none left, the player has won!
+        enemyCount--;
 
-        if (aliens.isEmpty()) {
+        if (enemies.isEmpty()) {
             notifyWin();
         }
 
-        // if there are still some aliens left then they all need to get faster, so
-        // speed up all the existing aliens
-        for(AlienGameObject alien : aliens){
-            alien.increaseMovementSpeed();
+        // if there are still some enemies left then they all need to get faster, so
+        // speed up all the existing enemies
+        for(GOEnemy enemy : enemies){
+            enemy.increaseMovementSpeed();
         }
     }
 
@@ -342,8 +343,8 @@ public class Game extends Canvas {
         gameObjects.add(gameObject);
     }
 
-    public void removeAlien(AlienGameObject alien) {
-        aliens.remove(alien);
+    public void removeEnemy(GOEnemy enemy) {
+        enemies.remove(enemy);
     }
 
     /**

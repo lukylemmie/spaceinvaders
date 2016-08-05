@@ -59,7 +59,7 @@ public class ShipGameObject extends GameObject {
         }
         // if we're moving right and have reached the right hand side
         // of the screen, don't move
-        if ((dx > 0) && (x > MAX_X - Game.SCREEN_EDGE_BUFFER)) {
+        if ((dx > 0) && (x > MAX_X - Game.SCREEN_EDGE_INNER_BUFFER)) {
             return;
         }
 
@@ -72,9 +72,9 @@ public class ShipGameObject extends GameObject {
      * @param other The gameObject with which the ship has collided
      */
     public void collidedWith(GameObject other) {
-        // if its an alien, notify the game that the player
+        // if its an enemy, notify the game that the player
         // is dead
-        if (other instanceof AlienGameObject) {
+        if (other instanceof GOEnemy) {
             game.notifyDeath();
         }
     }

@@ -47,10 +47,6 @@ public class GOBullet extends GameObject {
         }
     }
 
-    public boolean isOffScreen(){
-        return y < BULLET_ON_SCREEN;
-    }
-
     /**
      * Notification that this bullet has collided with another
      * gameObject
@@ -64,15 +60,15 @@ public class GOBullet extends GameObject {
             return;
         }
 
-        // if we've hit an alien, kill it!
-        if (other instanceof AlienGameObject) {
+        // if we've hit an enemy, kill it!
+        if (other instanceof GOEnemy) {
             // remove the affected gameObjects
             game.removeGameObject(this);
             game.removeGameObject(other);
 
-            // notify the game that the alien has been killed
-            game.notifyAlienKilled();
-            game.removeAlien((AlienGameObject) other);
+            // notify the game that the enemy has been killed
+            game.notifyEnemyKilled();
+            game.removeEnemy((GOEnemy) other);
             uses--;
         }
     }

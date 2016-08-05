@@ -1,5 +1,6 @@
 package spaceinvaders.gameObjects;
 
+import spaceinvaders.Game;
 import spaceinvaders.sprites.Sprite;
 import spaceinvaders.sprites.SpriteStore;
 
@@ -114,5 +115,14 @@ public abstract class GameObject {
 
     public void adjustY(double shift) {
         y += shift;
+    }
+
+    public boolean isOffScreen(){
+        boolean offScreen = false;
+        if (x < 0 - Game.SCREEN_EDGE_OUTER_BUFFER || x > Game.MAX_X + Game.SCREEN_EDGE_OUTER_BUFFER
+                || y < 0 - Game.SCREEN_EDGE_OUTER_BUFFER || y > Game.MAX_Y + Game.SCREEN_EDGE_OUTER_BUFFER){
+            offScreen = true;
+        }
+        return offScreen;
     }
 }
