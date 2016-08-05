@@ -63,8 +63,8 @@ public class GOBullet extends GameObject {
             game.removeGameObject(other);
 
             // notify the game that the enemy has been killed
-            game.notifyEnemyKilled();
             game.removeEnemy((GOEnemy) other);
+            game.notifyEnemyKilled();
             uses--;
         }
     }

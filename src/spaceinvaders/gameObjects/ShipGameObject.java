@@ -89,6 +89,6 @@ public class ShipGameObject extends GameObject {
         GOBullet bullet = new GOBullet(game, GOBullet.SPRITES_BULLET_GIF, getX() + getImageWidth()/2, getY());
         bullet.adjustX(-bullet.getImageWidth()/2);
         bullet.adjustY(-bullet.getImageHeight());
-        game.addTogameObjects(bullet);
+        game.addToGameObjects(bullet);
     }
 }

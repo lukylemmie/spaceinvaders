@@ -322,9 +322,6 @@ public class Game extends Canvas {
      * Notification that an enemy has been killed
      */
     public void notifyEnemyKilled() {
-
-        System.out.println(enemies.size());
-
         if (enemies.isEmpty()) {
             notifyWin();
         }
@@ -336,7 +333,7 @@ public class Game extends Canvas {
         }
     }
 
-    public void addTogameObjects(GameObject gameObject) {
+    public void addToGameObjects(GameObject gameObject) {
         gameObjects.add(gameObject);
     }
 
