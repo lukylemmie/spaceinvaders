@@ -5,25 +5,15 @@ import spaceinvaders.Game;
 import static spaceinvaders.Game.MAX_X;
 
 /**
- * The gameObject that represents the players ship
+ * The gameObject that represents the player's ship
  *
- * @author Original code base - Kevin Glass, refactors - Andrew Lem
+ * @author Andrew Lem
  */
 public class ShipGameObject extends GameObject {
     public static final int DEFAULT_SHIP_MOVE_SPEED = 300;
     public static final int DEFAULT_FIRING_INTERVAL = 500;
-    /**
-     * The speed at which the player's ship should move (pixels/sec)
-     */
     private double moveSpeed = DEFAULT_SHIP_MOVE_SPEED;
-
-    /**
-     * The time at which last fired a bullet
-     */
-    private long lastFire = 0;
-    /**
-     * The interval between our players bullet (ms)
-     */
+    private long lastFireTime = 0;
     private long firingInterval = DEFAULT_FIRING_INTERVAL;
 
     /**
@@ -39,7 +29,7 @@ public class ShipGameObject extends GameObject {
     }
 
     /**
-     * Request that the ship move itself based on an elapsed ammount of
+     * Request that the ship move itself based on an elapsed amount of
      * time
      *
      * @param delta The time that has elapsed since last move (ms)
@@ -47,7 +37,7 @@ public class ShipGameObject extends GameObject {
     public void move(long delta) {
         // if we're moving left and have reached the left hand side
         // of the screen, don't move
-        if ((dx < 0) && (x < 10)) {
+        if ((dx < 0) && (x < Game.SCREEN_EDGE_INNER_BUFFER)) {
             return;
         }
         // if we're moving right and have reached the right hand side
@@ -90,18 +80,13 @@ public class ShipGameObject extends GameObject {
      * point, i.e. has he/she waited long enough between bullets
      */
     public void tryToFire() {
-        // check that we have waiting long enough to fire
-        if (System.currentTimeMillis() - lastFire < firingInterval) {
+        // if too soon after last shot, cannot fire new shot
+        if (System.currentTimeMillis() - lastFireTime < firingInterval) {
             return;
         }
 
-        // if we waited long enough, create the bullet gameObject, and record the time.
-        lastFire = System.currentTimeMillis();
-        GOBullet bullet = new GOBullet(game, GOBullet.SPRITES_BULLET_GIF, getX(), getY());
-        bullet.adjustX(-bullet.getImageWidth()/2);
-        bullet.adjustY(-bullet.getImageHeight());
-        game.addTogameObjects(bullet);
-        bullet = new GOBullet(game, GOBullet.SPRITES_BULLET_GIF, getX() + getImageWidth(), getY());
+        lastFireTime = System.currentTimeMillis();
+        GOBullet bullet = new GOBullet(game, GOBullet.SPRITES_BULLET_GIF, getX() + getImageWidth()/2, getY());
         bullet.adjustX(-bullet.getImageWidth()/2);
         bullet.adjustY(-bullet.getImageHeight());
         game.addTogameObjects(bullet);
