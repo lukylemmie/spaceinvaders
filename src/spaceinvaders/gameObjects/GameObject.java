@@ -19,6 +19,8 @@ public abstract class GameObject {
     protected Sprite sprite;
     protected double dx;
     protected double dy;
+    protected Game game;
+
     /**
      * The rectangle used by this gameObject during collision detection
      */
@@ -35,7 +37,8 @@ public abstract class GameObject {
      * @param x   The initial x location of this gameObject
      * @param y   The initial y location of this gameObject
      */
-    public GameObject(String ref, int x, int y) {
+    public GameObject(Game game, String ref, int x, int y) {
+        this.game = game;
         sprite = SpriteStore.get().getSprite(ref);
         this.x = x;
         this.y = y;

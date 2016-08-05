@@ -10,9 +10,7 @@ import spaceinvaders.Game;
 public class GOBullet extends GameObject {
     public static final int DEFAULT_BULLET_MOVE_SPEED = -300;
     public static final String SPRITES_BULLET_GIF = "sprites/bullet.gif";
-    public static final int BULLET_ON_SCREEN = -100;
     private double moveSpeed = DEFAULT_BULLET_MOVE_SPEED;
-    private Game game;
     private int uses = 1;
 
     /**
@@ -24,9 +22,7 @@ public class GOBullet extends GameObject {
      * @param y      The initial y location of the bullet
      */
     public GOBullet(Game game, String sprite, int x, int y) {
-        super(sprite, x, y);
-
-        this.game = game;
+        super(game, sprite, x, y);
 
         dy = moveSpeed;
     }

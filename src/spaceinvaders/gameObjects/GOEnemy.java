@@ -5,19 +5,12 @@ import spaceinvaders.Game;
 /**
  * An gameObject which represents an enemy.
  *
- * @author Original code base - Kevin Glass, refactors - Andrew Lem
+ * @author Andrew Lem
  */
 public class GOEnemy extends GameObject {
     public static final int DEFAULT_ENEMY_MOVE_SPEED = 75;
     public static final double DEFAULT_ENEMY_MOVE_SPEED_INCREASE = 1.02;
-    /**
-     * The speed at which the enemy moves horizontally
-     */
     private double moveSpeed = DEFAULT_ENEMY_MOVE_SPEED;
-    /**
-     * The game in which the gameObject exists
-     */
-    private Game game;
 
     /**
      * Create a new enemy gameObject
@@ -28,9 +21,8 @@ public class GOEnemy extends GameObject {
      * @param y    The initial y location of this enemy
      */
     public GOEnemy(Game game, String ref, int x, int y) {
-        super(ref, x, y);
+        super(game, ref, x, y);
 
-        this.game = game;
         dx = -moveSpeed;
     }
 
