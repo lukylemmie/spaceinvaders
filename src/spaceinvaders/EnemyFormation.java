@@ -27,7 +27,8 @@ public class EnemyFormation {
             for (int x = 0; x < DEFAULT_ENEMIES_PER_ROW; x++) {
                 GOEnemy enemy = new GOEnemy(game, "sprites/enemy.gif",
                         DEFAULT_ENEMY_LEFT_EDGE_X + (x * DEFAULT_ENEMY_GAP_X),
-                        DEFAULT_ENEMY_TOP_EDGE_Y + row * DEFAULT_ENEMY_GAP_Y);
+                        DEFAULT_ENEMY_TOP_EDGE_Y + row * DEFAULT_ENEMY_GAP_Y,
+                        this);
                 game.addToGameObjects(enemy);
                 enemies.add(enemy);
             }

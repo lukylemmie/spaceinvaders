@@ -40,6 +40,8 @@ public class Game extends Canvas {
      */
     private BufferStrategy strategy;
     private boolean gameRunning = true;
+
+    private long lastLoopTime = System.currentTimeMillis();
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
     private ArrayList<GameObject> removeList = new ArrayList<>();
     private EnemyFormation enemyFormation;
@@ -162,8 +164,6 @@ public class Game extends Canvas {
      * <p>
      */
     public void gameLoop() {
-        long lastLoopTime = System.currentTimeMillis();
-
         // keep looping round til the game ends
         while (gameRunning) {
             // work out how long its been since the last update, this
@@ -319,6 +319,10 @@ public class Game extends Canvas {
 
     public void removeEnemy(GOEnemy enemy) {
         enemyFormation.remove(enemy);
+    }
+
+    public long getLastLoopTime() {
+        return lastLoopTime;
     }
 
     /**

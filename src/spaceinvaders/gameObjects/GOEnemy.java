@@ -1,5 +1,6 @@
 package spaceinvaders.gameObjects;
 
+import spaceinvaders.EnemyFormation;
 import spaceinvaders.Game;
 
 /**
@@ -10,7 +11,9 @@ import spaceinvaders.Game;
 public class GOEnemy extends GameObject {
     public static final int DEFAULT_ENEMY_MOVE_SPEED = 75;
     public static final double DEFAULT_ENEMY_MOVE_SPEED_INCREASE = 1.02;
+
     private double moveSpeed = DEFAULT_ENEMY_MOVE_SPEED;
+    private EnemyFormation enemyFormation;
 
     /**
      * Create a new enemy gameObject
@@ -20,10 +23,11 @@ public class GOEnemy extends GameObject {
      * @param x    The initial x location of this enemy
      * @param y    The initial y location of this enemy
      */
-    public GOEnemy(Game game, String ref, int x, int y) {
+    public GOEnemy(Game game, String ref, int x, int y, EnemyFormation enemyFormation) {
         super(game, ref, x, y);
 
         dx = -moveSpeed;
+        this.enemyFormation = enemyFormation;
     }
 
     /**
