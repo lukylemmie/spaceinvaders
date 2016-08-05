@@ -1,5 +1,6 @@
 package spaceinvaders;
 
+import spaceinvaders.gameObjects.GOBullet;
 import spaceinvaders.gameObjects.GOEnemy;
 import spaceinvaders.gameObjects.GameObject;
 import spaceinvaders.gameObjects.GOShip;
@@ -46,6 +47,7 @@ public class Game extends Canvas {
     private ArrayList<GameObject> removeList = new ArrayList<>();
     private EnemyFormation enemyFormation;
     private GOShip ship;
+    private ArrayList<GOBullet> bullets = new ArrayList<>();
 
     /**
      * The message to display which waiting for a key press
