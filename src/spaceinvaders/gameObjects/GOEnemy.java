@@ -34,11 +34,13 @@ public class GOEnemy extends GameObject {
     public void move(long delta) {
         // if we have reached the left hand side of the screen and
         // are moving left then request a logic update
+        // TODO refactor this to an enemy formation class
         if ((dx < 0) && (x < 10)) {
             game.updateLogic();
         }
         // and vice vesa, if we have reached the right hand side of
         // the screen and are moving right, request a logic update
+        // TODO refactor this to an enemy formation class
         if ((dx > 0) && (x > Game.MAX_X - Game.SCREEN_EDGE_INNER_BUFFER)) {
             game.updateLogic();
         }
@@ -50,6 +52,7 @@ public class GOEnemy extends GameObject {
     /**
      * Update the game logic related to enemies
      */
+    // TODO refactor this to an enemy formation class
     public void doLogic() {
         // swap over horizontal movement and move down the
         // screen a bit
