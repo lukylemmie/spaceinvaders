@@ -3,7 +3,7 @@ package spaceinvaders.gameObjects;
 import spaceinvaders.Game;
 
 /**
- * An entity which represents one of our space invader aliens.
+ * An gameObject which represents one of our space invader aliens.
  *
  * @author Original code base - Kevin Glass, refactors - Andrew Lem
  */
@@ -15,14 +15,14 @@ public class AlienGameObject extends GameObject {
      */
     private double moveSpeed = DEFAULT_ALIEN_MOVE_SPEED;
     /**
-     * The game in which the entity exists
+     * The game in which the gameObject exists
      */
     private Game game;
 
     /**
-     * Create a new alien entity
+     * Create a new alien gameObject
      *
-     * @param game The game in which this entity is being created
+     * @param game The game in which this gameObject is being created
      * @param ref  The sprite which should be displayed for this alien
      * @param x    The initial x location of this alien
      * @param y    The initial y location of this alien
@@ -72,9 +72,9 @@ public class AlienGameObject extends GameObject {
     }
 
     /**
-     * Notification that this alien has collided with another entity
+     * Notification that this alien has collided with another gameObject
      *
-     * @param other The other entity
+     * @param other The other gameObject
      */
     public void collidedWith(GameObject other) {
         // collisions with aliens are handled elsewhere

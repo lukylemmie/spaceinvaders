@@ -30,9 +30,9 @@ public abstract class GameObject {
     /**
      * Construct a gameObject based on a sprite image and a location.
      *
-     * @param ref The reference to the image to be displayed for this entity
-     * @param x   The initial x location of this entity
-     * @param y   The initial y location of this entity
+     * @param ref The reference to the image to be displayed for this gameObject
+     * @param x   The initial x location of this gameObject
+     * @param y   The initial y location of this gameObject
      */
     public GameObject(String ref, int x, int y) {
         sprite = SpriteStore.get().getSprite(ref);
@@ -47,7 +47,7 @@ public abstract class GameObject {
      * @param delta The amount of time that has passed in milliseconds
      */
     public void move(long delta) {
-        // update the location of the entity based on move speeds
+        // update the location of the gameObject based on move speeds
         x += (delta * dx) / 1000;
         y += (delta * dy) / 1000;
     }
@@ -88,7 +88,7 @@ public abstract class GameObject {
      * Check if this gameObject collided with another.
      *
      * @param other The other gameObject to check collision against
-     * @return True if the entities collide with each other
+     * @return True if the gameObjects collide with each other
      */
     public boolean collidesWith(GameObject other) {
         me.setBounds((int) x, (int) y, sprite.getWidth(), sprite.getHeight());

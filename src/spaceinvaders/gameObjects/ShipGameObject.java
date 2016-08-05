@@ -5,7 +5,7 @@ import spaceinvaders.Game;
 import static spaceinvaders.Game.MAX_X;
 
 /**
- * The entity that represents the players ship
+ * The gameObject that represents the players ship
  *
  * @author Original code base - Kevin Glass, refactors - Andrew Lem
  */
@@ -32,7 +32,7 @@ public class ShipGameObject extends GameObject {
     private long firingInterval = DEFAULT_FIRING_INTERVAL;
 
     /**
-     * Create a new entity to represent the players ship
+     * Create a new gameObject to represent the players ship
      *
      * @param game The game in which the ship is being created
      * @param ref  The reference to the sprite to show for the ship
@@ -69,7 +69,7 @@ public class ShipGameObject extends GameObject {
     /**
      * Notification that the player's ship has collided with something
      *
-     * @param other The entity with which the ship has collided
+     * @param other The gameObject with which the ship has collided
      */
     public void collidedWith(GameObject other) {
         // if its an alien, notify the game that the player
@@ -102,15 +102,15 @@ public class ShipGameObject extends GameObject {
             return;
         }
 
-        // if we waited long enough, create the bullet entity, and record the time.
+        // if we waited long enough, create the bullet gameObject, and record the time.
         lastFire = System.currentTimeMillis();
         GOBullet bullet = new GOBullet(game, GOBullet.SPRITES_BULLET_GIF, getX(), getY());
         bullet.adjustX(-bullet.getImageWidth()/2);
         bullet.adjustY(-bullet.getImageHeight());
-        game.addToEntities(bullet);
+        game.addTogameObjects(bullet);
         bullet = new GOBullet(game, GOBullet.SPRITES_BULLET_GIF, getX() + getImageWidth(), getY());
         bullet.adjustX(-bullet.getImageWidth()/2);
         bullet.adjustY(-bullet.getImageHeight());
-        game.addToEntities(bullet);
+        game.addTogameObjects(bullet);
     }
 }

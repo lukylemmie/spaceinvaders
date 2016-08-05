@@ -53,9 +53,9 @@ public class GOBullet extends GameObject {
 
     /**
      * Notification that this bullet has collided with another
-     * entity
+     * gameObject
      *
-     * @parma other The other entity with which we've collided
+     * @parma other The other gameObject with which we've collided
      */
     public void collidedWith(GameObject other) {
         // prevents double kills, if we've already hit something,

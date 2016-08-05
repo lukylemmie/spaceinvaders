@@ -18,11 +18,11 @@ import java.util.ArrayList;
  * for the display and central mediator for the game logic.
  * <p>
  * Display management will consist of a loop that cycles round all
- * entities in the game asking them to move and then drawing them
+ * gameObjects in the game asking them to move and then drawing them
  * in the appropriate place. With the help of an inner class it
  * will also allow the player to control the main ship.
  * <p>
- * As a mediator it will be informed when entities within our game
+ * As a mediator it will be informed when gameObjects within our game
  * detect events (e.g. alien killed, played died) and will take
  * appropriate game actions.
  *
@@ -45,7 +45,7 @@ public class Game extends Canvas {
      */
     private BufferStrategy strategy;
     private boolean gameRunning = true;
-    private ArrayList<GameObject> entities = new ArrayList<>();
+    private ArrayList<GameObject> gameObjects = new ArrayList<>();
     private ArrayList<AlienGameObject> aliens = new ArrayList<>();
     private ArrayList<GameObject> removeList = new ArrayList<>();
     private ShipGameObject ship;
@@ -109,9 +109,9 @@ public class Game extends Canvas {
         createBufferStrategy(2);
         strategy = getBufferStrategy();
 
-        // initialise the entities in our game so there's something
+        // initialise the gameObjects in our game so there's something
         // to see at startup
-        initEntities();
+        initGameObjects();
     }
 
     /**
@@ -131,13 +131,13 @@ public class Game extends Canvas {
     }
 
     /**
-     * Initialise the starting state of the entities (ship and aliens). Each
-     * entity will be added to the overall list of entities in the game.
+     * Initialise the starting state of the gameObjects (ship and aliens). Each
+     * gameObject will be added to the overall list of gameObjects in the game.
      */
-    private void initEntities() {
+    private void initGameObjects() {
         // create the player ship and place it roughly in the center of the screen
         ship = new ShipGameObject(this, "sprites/ship.gif", (MAX_X - SCREEN_EDGE_BUFFER) / 2, MAX_Y - SCREEN_EDGE_BUFFER);
-        entities.add(ship);
+        gameObjects.add(ship);
 
         // create a block of aliens (5 rows, by 12 aliens, spaced evenly)
         alienCount = 0;
@@ -147,7 +147,7 @@ public class Game extends Canvas {
                 AlienGameObject alien = new AlienGameObject(this, "sprites/alien.gif",
                         DEFAULT_ALIEN_LEFT_EDGE_X + (x * DEFAULT_ALIEN_GAP_X),
                         DEFAULT_ALIEN_TOP_EDGE_Y + row * DEFAULT_ALIEN_GAP_Y);
-                entities.add(alien);
+                gameObjects.add(alien);
                 aliens.add(alien);
                 alienCount++;
             }
@@ -159,9 +159,9 @@ public class Game extends Canvas {
      * create a new set.
      */
     private void startGame() {
-        // clear out any existing entities and intialise a new set
-        entities.clear();
-        initEntities();
+        // clear out any existing gameObjects and intialise a new set
+        gameObjects.clear();
+        initGameObjects();
 
         // blank out any keyboard settings we might currently have
         leftPressed = false;
@@ -174,8 +174,8 @@ public class Game extends Canvas {
      * play as is responsible for the following activities:
      * <p>
      * - Working out the speed of the game loop to update moves
-     * - Moving the game entities
-     * - Drawing the screen contents (entities, text)
+     * - Moving the game gameObjects
+     * - Drawing the screen contents (gameObjects, text)
      * - Updating game events
      * - Checking Input
      * <p>
@@ -186,7 +186,7 @@ public class Game extends Canvas {
         // keep looping round til the game ends
         while (gameRunning) {
             // work out how long its been since the last update, this
-            // will be used to calculate how far the entities should
+            // will be used to calculate how far the gameObjects should
             // move this loop
             long delta = System.currentTimeMillis() - lastLoopTime;
             lastLoopTime = System.currentTimeMillis();
@@ -197,29 +197,29 @@ public class Game extends Canvas {
             g.setColor(Color.black);
             g.fillRect(0, 0, MAX_X, MAX_Y);
 
-            // cycle round asking each entity to move itself
+            // cycle round asking each gameObject to move itself
             if (!waitingForKeyPress) {
-                for (int i = 0; i < entities.size(); i++) {
-                    GameObject gameObject = (GameObject) entities.get(i);
+                for (int i = 0; i < gameObjects.size(); i++) {
+                    GameObject gameObject = (GameObject) gameObjects.get(i);
 
                     gameObject.move(delta);
                 }
             }
 
-            // cycle round drawing all the entities we have in the game
-            for (int i = 0; i < entities.size(); i++) {
-                GameObject gameObject = (GameObject) entities.get(i);
+            // cycle round drawing all the gameObjects we have in the game
+            for (int i = 0; i < gameObjects.size(); i++) {
+                GameObject gameObject = (GameObject) gameObjects.get(i);
 
                 gameObject.draw(g);
             }
 
-            // brute force collisions, compare every entity against
-            // every other entity. If any of them collide notify
-            // both entities that the collision has occurred
-            for (int p = 0; p < entities.size(); p++) {
-                for (int s = p + 1; s < entities.size(); s++) {
-                    GameObject me = (GameObject) entities.get(p);
-                    GameObject him = (GameObject) entities.get(s);
+            // brute force collisions, compare every gameObject against
+            // every other gameObject. If any of them collide notify
+            // both gameObjects that the collision has occurred
+            for (int p = 0; p < gameObjects.size(); p++) {
+                for (int s = p + 1; s < gameObjects.size(); s++) {
+                    GameObject me = (GameObject) gameObjects.get(p);
+                    GameObject him = (GameObject) gameObjects.get(s);
 
                     if (me.collidesWith(him)) {
                         me.collidedWith(him);
@@ -228,16 +228,16 @@ public class Game extends Canvas {
                 }
             }
 
-            // remove any entity that has been marked for clear up
-            entities.removeAll(removeList);
+            // remove any gameObject that has been marked for clear up
+            gameObjects.removeAll(removeList);
             removeList.clear();
 
             // if a game event has indicated that game logic should
-            // be resolved, cycle round every entity requesting that
+            // be resolved, cycle round every gameObject requesting that
             // their personal logic should be considered.
             if (logicRequiredThisLoop) {
-                for (int i = 0; i < entities.size(); i++) {
-                    GameObject gameObject = entities.get(i);
+                for (int i = 0; i < gameObjects.size(); i++) {
+                    GameObject gameObject = gameObjects.get(i);
                     gameObject.doLogic();
                 }
 
@@ -285,7 +285,7 @@ public class Game extends Canvas {
     }
 
     /**
-     * Notification from a game entity that the logic of the game
+     * Notification from a game gameObject that the logic of the game
      * should be run at the next opportunity (normally as a result of some
      * game event)
      */
@@ -338,8 +338,8 @@ public class Game extends Canvas {
         }
     }
 
-    public void addToEntities(GameObject gameObject) {
-        entities.add(gameObject);
+    public void addTogameObjects(GameObject gameObject) {
+        gameObjects.add(gameObject);
     }
 
     public void removeAlien(AlienGameObject alien) {
