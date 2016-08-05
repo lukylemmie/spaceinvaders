@@ -14,6 +14,7 @@ public class GOEnemy extends GameObject {
 
     private double moveSpeed = DEFAULT_ENEMY_MOVE_SPEED;
     private EnemyFormation enemyFormation;
+    private int hp = 1;
 
     /**
      * Create a new enemy gameObject
@@ -65,5 +66,13 @@ public class GOEnemy extends GameObject {
         if (y > Game.MAX_Y - Game.SCREEN_EDGE_INNER_BUFFER) {
             game.notifyDeath();
         }
+    }
+
+    public void takeDamage(int damage){
+        hp -= damage;
+    }
+
+    public boolean isDead(){
+        return hp <= 0;
     }
 }

@@ -68,4 +68,16 @@ public class GOBullet extends GameObject {
             uses--;
         }
     }
+
+    public void bulletHitsEnemy(GOEnemy enemy){
+        // prevents double kills, if we've already hit something, don't collide
+        if (!isUsed()) {
+            enemy.takeDamage(1);
+            uses--;
+        }
+    }
+
+    public boolean isUsed(){
+        return uses < 1;
+    }
 }

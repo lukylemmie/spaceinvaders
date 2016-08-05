@@ -44,9 +44,11 @@ public class Game extends Canvas {
 
     private long lastLoopTime = System.currentTimeMillis();
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
-    private ArrayList<GameObject> removeList = new ArrayList<>();
+    private ArrayList<GameObject> removeGameObjects = new ArrayList<>();
     private ArrayList<GOBullet> bullets = new ArrayList<>();
+    private ArrayList<GOBullet> removeBullets = new ArrayList<>();
     private ArrayList<GOEnemy> enemies = new ArrayList<>();
+    private ArrayList<GOEnemy> removeEnemies = new ArrayList<>();
     private EnemyFormation enemyFormation;
     private GOShip ship;
 
@@ -210,21 +212,32 @@ public class Game extends Canvas {
 
 //            for (GOEnemy enemy : enemies){
 //                for (GOBullet bullet : bullets){
-//                    if(enemy.collidesWith(bullet)) {
-//                        enemy.collidedWith(bullet);
-//                        bullet.collidedWith(enemy);
+//                    if (bullet.collidesWith(enemy)) {
+//                        bullet.bulletHitsEnemy(enemy);
+//                    }
+//                    if (enemy.isDead()){
+//                        removeGameObjects.add(enemy);
+//                        removeEnemies.add(enemy);
+//                        notifyEnemyKilled();
+//                    }
+//                    if (bullet.isUsed()){
+//                        removeGameObjects.add(bullet);
+//                        removeBullets.add(bullet);
 //                    }
 //                }
 //
-//                if(enemy.collidesWith(ship)) {
-//                    enemy.collidedWith(ship);
-//                    ship.collidesWith(enemy);
+//                if(ship.collidesWith(enemy)) {
+//                    ship.collidedWith(enemy);
 //                }
 //            }
 
             // remove any gameObject that has been marked for clear up
-            gameObjects.removeAll(removeList);
-            removeList.clear();
+            gameObjects.removeAll(removeGameObjects);
+            removeGameObjects.clear();
+//            enemies.removeAll(removeEnemies);
+//            removeEnemies.clear();
+//            bullets.removeAll(removeBullets);
+//            removeBullets.clear();
 
             // if we're waiting for an "any key" press then draw the current message
             if (waitingForKeyPress) {
@@ -265,22 +278,13 @@ public class Game extends Canvas {
     }
 
     /**
-     * Notification from a game gameObject that the logic of the game
-     * should be run at the next opportunity (normally as a result of some
-     * game event)
-     */
-    public void updateLogic() {
-        logicRequiredThisLoop = true;
-    }
-
-    /**
      * Remove an gameObject from the game. The gameObject removed will
      * no longer move or be drawn.
      *
      * @param gameObject The gameObject that should be removed
      */
     public void removeGameObject(GameObject gameObject) {
-        removeList.add(gameObject);
+        removeGameObjects.add(gameObject);
     }
 
     /**
@@ -300,9 +304,6 @@ public class Game extends Canvas {
         waitingForKeyPress = true;
     }
 
-    /**
-     * Notification that an enemy has been killed
-     */
     public void notifyEnemyKilled() {
         if (enemyFormation.isEmpty()) {
             notifyWin();
