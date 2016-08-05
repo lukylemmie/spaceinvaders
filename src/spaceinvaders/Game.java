@@ -45,9 +45,10 @@ public class Game extends Canvas {
     private long lastLoopTime = System.currentTimeMillis();
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
     private ArrayList<GameObject> removeList = new ArrayList<>();
+    private ArrayList<GOBullet> bullets = new ArrayList<>();
+    private ArrayList<GOEnemy> enemies = new ArrayList<>();
     private EnemyFormation enemyFormation;
     private GOShip ship;
-    private ArrayList<GOBullet> bullets = new ArrayList<>();
 
     /**
      * The message to display which waiting for a key press
@@ -180,23 +181,17 @@ public class Game extends Canvas {
             g.setColor(Color.black);
             g.fillRect(0, 0, MAX_X, MAX_Y);
 
-            // cycle round asking each gameObject to move itself
+            // cycle round asking each gameObject to move and draw itself
             if (!waitingForKeyPress) {
-                for (int i = 0; i < gameObjects.size(); i++) {
-                    GameObject gameObject = gameObjects.get(i);
-
+                for (GameObject gameObject : gameObjects){
                     gameObject.move(delta);
                 }
             }
 
-            // cycle round drawing all the gameObjects we have in the game
-            for (int i = 0; i < gameObjects.size(); i++) {
-                GameObject gameObject = gameObjects.get(i);
-
+            for (GameObject gameObject : gameObjects){
                 gameObject.draw(g);
             }
 
-            // TODO refactor collision checks, just need to check player and bullets
             // brute force collisions, compare every gameObject against
             // every other gameObject. If any of them collide notify
             // both gameObjects that the collision has occurred
@@ -212,25 +207,26 @@ public class Game extends Canvas {
                 }
             }
 
+
+//            for (GOEnemy enemy : enemies){
+//                for (GOBullet bullet : bullets){
+//                    if(enemy.collidesWith(bullet)) {
+//                        enemy.collidedWith(bullet);
+//                        bullet.collidedWith(enemy);
+//                    }
+//                }
+//
+//                if(enemy.collidesWith(ship)) {
+//                    enemy.collidedWith(ship);
+//                    ship.collidesWith(enemy);
+//                }
+//            }
+
             // remove any gameObject that has been marked for clear up
             gameObjects.removeAll(removeList);
             removeList.clear();
 
-            // TODO refactor: remove logic statments
-            // if a game event has indicated that game logic should
-            // be resolved, cycle round every gameObject requesting that
-            // their personal logic should be considered.
-            if (logicRequiredThisLoop) {
-                for (int i = 0; i < gameObjects.size(); i++) {
-                    GameObject gameObject = gameObjects.get(i);
-                    gameObject.doLogic();
-                }
-
-                logicRequiredThisLoop = false;
-            }
-
-            // if we're waiting for an "any key" press then draw the
-            // current message
+            // if we're waiting for an "any key" press then draw the current message
             if (waitingForKeyPress) {
                 g.setColor(Color.white);
                 g.drawString(message, (MAX_X - g.getFontMetrics().stringWidth(message)) / 2, MAX_Y / 2 - SCREEN_EDGE_INNER_BUFFER);
@@ -238,14 +234,13 @@ public class Game extends Canvas {
                         (MAX_X - g.getFontMetrics().stringWidth("Press any key to start, Press ESC to quit")) / 2, MAX_Y / 2);
             }
 
-            // finally, we've completed drawing so clear up the graphics
-            // and flip the buffer over
+            // finally, we've completed drawing so clear up the graphics and flip the buffer over
             g.dispose();
             strategy.show();
 
             // resolve the movement of the ship. First assume the ship
             // isn't moving. If either cursor key is pressed then
-            // update the movement appropraitely
+            // update the movement appropriately
             ship.moveStop();
 
             if ((leftPressed) && (!rightPressed)) {
@@ -325,6 +320,14 @@ public class Game extends Canvas {
 
     public long getLastLoopTime() {
         return lastLoopTime;
+    }
+
+    public void addBullet(GOBullet bullet){
+        bullets.add(bullet);
+    }
+
+    public void addEnemy(GOEnemy enemy){
+        enemies.add(enemy);
     }
 
     /**

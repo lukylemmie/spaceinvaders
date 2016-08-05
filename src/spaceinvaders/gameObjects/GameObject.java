@@ -84,10 +84,6 @@ public abstract class GameObject {
         sprite.draw(g, (int) x, (int) y);
     }
 
-    // TODO remove and rewrite logic
-    public void doLogic() {
-    }
-
     /**
      * Check if this gameObject collided with another.
      *

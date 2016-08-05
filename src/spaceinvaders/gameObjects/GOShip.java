@@ -90,5 +90,6 @@ public class GOShip extends GameObject {
         bullet.adjustX(-bullet.getImageWidth()/2);
         bullet.adjustY(-bullet.getImageHeight());
         game.addToGameObjects(bullet);
+        game.addBullet(bullet);
     }
 }
