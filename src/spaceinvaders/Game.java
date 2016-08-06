@@ -4,31 +4,19 @@ import spaceinvaders.gameObjects.GOBullet;
 import spaceinvaders.gameObjects.GOEnemy;
 import spaceinvaders.gameObjects.GOShip;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 
 /**
  * @author Andrew Lem
  */
-public class Game extends Canvas {
+public class Game {
     public static final int MAX_X = 800;
     public static final int MAX_Y = 600;
     public static final int SCREEN_EDGE_INNER_BUFFER = 50;
     public static final int SCREEN_EDGE_OUTER_BUFFER = 100;
-    public static final String USER_INPUT_PROMPT = "Press any key to start, Press ESC to quit";
 
-    /**
-     * The strategy that allows us to use accelerate page flipping
-     */
-    private BufferStrategy strategy;
     private boolean gameRunning = true;
-
     private long lastLoopTime = System.currentTimeMillis();
     private ArrayList<GOEnemy> enemies = new ArrayList<>();
     private ArrayList<GOEnemy> removeEnemies = new ArrayList<>();
@@ -36,67 +24,15 @@ public class Game extends Canvas {
     private ArrayList<GOBullet> removeBullets = new ArrayList<>();
     private EnemyFormation enemyFormation;
     private GOShip ship;
-
-    /**
-     * The message to display which waiting for a key press
-     */
-    private String message = "";
-    private boolean waitingForKeyPress = true;
-    private boolean leftPressed = false;
-    private boolean rightPressed = false;
-    private boolean firePressed = false;
-    /**
-     * True if game logic needs to be applied this loop, normally as a result of a game event
-     */
+    private UserInput userInput;
+    private GameView gameView;
 
     /**
      * Construct our game and set it running.
      */
     public Game() {
-        // create a frame to contain our game
-        JFrame container = new JFrame("Space Invaders 101");
-
-        // get hold the content of the frame and set up the resolution of the game
-        JPanel panel = (JPanel) container.getContentPane();
-        panel.setPreferredSize(new Dimension(MAX_X, MAX_Y));
-        panel.setLayout(null);
-
-        // setup our canvas size and put it into the content of the frame
-        setBounds(0, 0, MAX_X, MAX_Y);
-        panel.add(this);
-
-        // Tell AWT not to bother repainting our canvas since we're
-        // going to do that our self in accelerated mode
-        setIgnoreRepaint(true);
-
-        // finally make the window visible
-        container.pack();
-        container.setResizable(false);
-        container.setVisible(true);
-
-        // add a listener to respond to the user closing the window. If they
-        // do we'd like to exit the game
-        container.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
-
-        // add a key input system (defined below) to our canvas
-        // so we can respond to key pressed
-        addKeyListener(new KeyInputHandler());
-
-        // request the focus so key events come to us
-        requestFocus();
-
-        // create the buffering strategy which will allow AWT
-        // to manage our accelerated graphics
-        createBufferStrategy(2);
-        strategy = getBufferStrategy();
-
-        // initialise the gameObjects in our game so there's something
-        // to see at startup
-        initGameObjects();
+        userInput = new UserInput(this);
+        gameView = new GameView(this, userInput);
     }
 
     /**
@@ -115,7 +51,7 @@ public class Game extends Canvas {
         g.gameLoop();
     }
 
-    private void initGameObjects() {
+    public void initGameObjects() {
         enemies.clear();
         bullets.clear();
         // create the player ship and place it roughly in the center of the screen
@@ -127,20 +63,23 @@ public class Game extends Canvas {
      * Start a fresh game, this should clear out any old data and
      * create a new set.
      */
-    private void startGame() {
+    public void startGame() {
         // clear out any existing gameObjects and initialise a new set
         initGameObjects();
 
         // blank out any keyboard settings we might currently have
-        leftPressed = false;
-        rightPressed = false;
-        firePressed = false;
+        userInput.clearPressed();
     }
 
     public void gameLoop() {
         // keep looping round til the game ends
         while (gameRunning) {
-            moveAndDrawGraphics();
+            for(GOBullet bullet : bullets){
+                if (bullet.isOffScreen()) {
+                    removeBullets.add(bullet);
+                }
+            }
+            gameView.moveAndDrawGraphics(lastLoopTime, ship, enemies, bullets);
             checkForCollisions();
             processUserInput();
             sleepForFPS();
@@ -158,63 +97,20 @@ public class Game extends Canvas {
         }
     }
 
-    private void moveAndDrawGraphics() {
-        // work out how long its been since the last update, this will be used to calculate how far the gameObjects
-        // should move this loop
-        long delta = System.currentTimeMillis() - lastLoopTime;
-        lastLoopTime = System.currentTimeMillis();
-
-        // Get hold of a graphics context for the accelerated
-        // surface and blank it out
-        Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
-        g.setColor(Color.black);
-        g.fillRect(0, 0, MAX_X, MAX_Y);
-
-        // cycle round asking each gameObject to move and draw itself
-        if (waitingForKeyPress) {
-            delta = 0;
-        }
-        ship.move(delta);
-        ship.draw(g);
-        for (GOEnemy enemy : enemies){
-            enemy.move(delta);
-            enemy.draw(g);
-        }
-        for (GOBullet bullet : bullets){
-            bullet.move(delta);
-            if (bullet.isOffScreen()) {
-                removeBullets.add(bullet);
-            }
-            bullet.draw(g);
-        }
-
-        // if we're waiting for an "any key" press then draw the current message
-        if (waitingForKeyPress) {
-            g.setColor(Color.white);
-            g.drawString(message, (MAX_X - g.getFontMetrics().stringWidth(message)) / 2, MAX_Y / 2 - SCREEN_EDGE_INNER_BUFFER);
-            g.drawString(USER_INPUT_PROMPT,
-                    (MAX_X - g.getFontMetrics().stringWidth("Press any key to start, Press ESC to quit")) / 2, MAX_Y / 2);
-        }
-
-        // finally, we've completed drawing so clear up the graphics and flip the buffer over
-        g.dispose();
-        strategy.show();
-    }
-
     private void processUserInput() {
         // resolve the movement of the ship. First assume the ship
         // isn't moving. If either cursor key is pressed then
         // update the movement appropriately
         ship.moveStop();
 
-        if ((leftPressed) && (!rightPressed)) {
+        if ((userInput.isLeftPressed()) && (!userInput.isRightPressed())) {
             ship.moveLeft();
-        } else if ((rightPressed) && (!leftPressed)) {
+        } else if ((userInput.isRightPressed()) && (!userInput.isLeftPressed())) {
             ship.moveRight();
         }
 
         // if we're pressing fire, attempt to fire
-        if (firePressed) {
+        if (userInput.isFirePressed()) {
             ship.tryToFire();
         }
     }
@@ -254,13 +150,13 @@ public class Game extends Canvas {
     }
 
     public void notifyDeath() {
-        message = "Oh no! They got you, try again?";
-        waitingForKeyPress = true;
+        gameView.setMessage("Oh no! They got you, try again?");
+        userInput.waitForKeyPress();
     }
 
     public void notifyWin() {
-        message = "Well done! You Win!";
-        waitingForKeyPress = true;
+        gameView.setMessage("Well done! You Win!");
+        userInput.waitForKeyPress();
     }
 
     public void notifyEnemyKilled() {
@@ -280,78 +176,5 @@ public class Game extends Canvas {
 
     public void addEnemy(GOEnemy enemy){
         enemies.add(enemy);
-    }
-
-    private class KeyInputHandler extends KeyAdapter {
-        public static final int ESC_KEY_VALUE = 27;
-        private int pressCount = 1;
-
-        public void keyPressed(KeyEvent e) {
-            // if we're waiting for an "any key" typed then we don't
-            // want to do anything with just a "press"
-            if (waitingForKeyPress) {
-                return;
-            }
-
-
-            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                leftPressed = true;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                rightPressed = true;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                firePressed = true;
-            }
-        }
-
-        public void keyReleased(KeyEvent e) {
-            // if we're waiting for an "any key" typed then we don't
-            // want to do anything with just a "released"
-            if (waitingForKeyPress) {
-                return;
-            }
-
-            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                leftPressed = false;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                rightPressed = false;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                firePressed = false;
-            }
-        }
-
-        /**
-         * Notification from AWT that a key has been typed. Note that
-         * typing a key means to both press and then release it.
-         *
-         * @param e The details of the key that was typed.
-         */
-        public void keyTyped(KeyEvent e) {
-            // if we're waiting for a "any key" type then
-            // check if we've received any recently. We may
-            // have had a keyType() event from the user releasing
-            // the shoot or move keys, hence the use of the "pressCount"
-            // counter.
-            if (waitingForKeyPress) {
-                if (pressCount == 1) {
-                    // since we've now received our key typed
-                    // event we can mark it as such and start
-                    // our new game
-                    waitingForKeyPress = false;
-                    startGame();
-                    pressCount = 0;
-                } else {
-                    pressCount++;
-                }
-            }
-
-            // if we hit escape, then quit the game
-            if (e.getKeyChar() == ESC_KEY_VALUE) {
-                System.exit(0);
-            }
-        }
     }
 }
