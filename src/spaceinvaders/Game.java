@@ -2,7 +2,6 @@ package spaceinvaders;
 
 import spaceinvaders.gameObjects.GOBullet;
 import spaceinvaders.gameObjects.GOEnemy;
-import spaceinvaders.gameObjects.GameObject;
 import spaceinvaders.gameObjects.GOShip;
 
 import javax.swing.*;
@@ -49,7 +48,6 @@ public class Game extends Canvas {
     /**
      * True if game logic needs to be applied this loop, normally as a result of a game event
      */
-    private boolean logicRequiredThisLoop = false;
 
     /**
      * Construct our game and set it running.
@@ -117,10 +115,6 @@ public class Game extends Canvas {
         g.gameLoop();
     }
 
-    /**
-     * Initialise the starting state of the gameObjects (ship and enemies). Each
-     * gameObject will be added to the overall list of gameObjects in the game.
-     */
     private void initGameObjects() {
         enemies.clear();
         bullets.clear();
@@ -143,17 +137,6 @@ public class Game extends Canvas {
         firePressed = false;
     }
 
-    /**
-     * The main game loop. This loop is running during all game
-     * play as is responsible for the following activities:
-     * <p>
-     * - Working out the speed of the game loop to update moves
-     * - Moving the game gameObjects
-     * - Drawing the screen contents (gameObjects, text)
-     * - Updating game events
-     * - Checking Input
-     * <p>
-     */
     public void gameLoop() {
         // keep looping round til the game ends
         while (gameRunning) {
@@ -299,32 +282,10 @@ public class Game extends Canvas {
         enemies.add(enemy);
     }
 
-    /**
-     * A class to handle keyboard input from the user. The class
-     * handles both dynamic input during game play, i.e. left/right
-     * and shoot, and more static type input (i.e. press any key to
-     * continue)
-     * <p>
-     * This has been implemented as an inner class more through
-     * habit then anything else. Its perfectly normal to implement
-     * this as separate class if slight less convenient.
-     *
-     * @author Kevin Glass
-     */
     private class KeyInputHandler extends KeyAdapter {
         public static final int ESC_KEY_VALUE = 27;
-        /**
-         * The number of key presses we've had while waiting for an "any key" press
-         */
         private int pressCount = 1;
 
-        /**
-         * Notification from AWT that a key has been pressed. Note that
-         * a key being pressed is equal to being pushed down but *NOT*
-         * released. Thats where keyTyped() comes in.
-         *
-         * @param e The details of the key that was pressed
-         */
         public void keyPressed(KeyEvent e) {
             // if we're waiting for an "any key" typed then we don't
             // want to do anything with just a "press"
@@ -344,11 +305,6 @@ public class Game extends Canvas {
             }
         }
 
-        /**
-         * Notification from AWT that a key has been released.
-         *
-         * @param e The details of the key that was released
-         */
         public void keyReleased(KeyEvent e) {
             // if we're waiting for an "any key" typed then we don't
             // want to do anything with just a "released"
