@@ -59,6 +59,10 @@ public class UserInput {
         return firePressed;
     }
 
+    public boolean isMouseClick(){
+        return mouseClick;
+    }
+
     public void waitForKeyPress() {
         waitingForKeyPress = true;
     }
@@ -152,15 +156,20 @@ public class UserInput {
         }
 
         public void mouseDragged(MouseEvent e) {
-            //do something
+            mouseX = e.getX();
+            mouseY = e.getY();
         }
 
         public void mouseClicked(MouseEvent e) {
-            mouseClick = true;
+//            mouseClick = true;
         }
 
         public void mousePressed(MouseEvent e) {
             mouseClick = true;
+        }
+
+        public void mouseReleased(MouseEvent e){
+            mouseClick = false;
         }
     }
 }

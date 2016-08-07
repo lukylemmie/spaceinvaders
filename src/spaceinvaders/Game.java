@@ -119,14 +119,14 @@ public class Game {
         // update the movement appropriately
         ship.moveStop();
 
-        if ((userInput.isLeftPressed()) && (!userInput.isRightPressed())) {
+        if (userInput.getMouseX() < ship.getX() - 1) {
             ship.moveLeft();
-        } else if ((userInput.isRightPressed()) && (!userInput.isLeftPressed())) {
+        } else if (userInput.getMouseX() > ship.getX() + 1) {
             ship.moveRight();
         }
 
         // if we're pressing fire, attempt to fire
-        if (userInput.isFirePressed()) {
+        if (userInput.isMouseClick()) {
             ship.tryToFire();
         }
     }
