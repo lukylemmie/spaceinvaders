@@ -25,6 +25,8 @@ public class Game {
     private GOShip ship;
     private UserInput userInput;
     private GameView gameView;
+    private boolean mouseControls = true;
+    private boolean keyboardControls = false;
 
     /**
      * Construct our game and set it running.
@@ -119,15 +121,31 @@ public class Game {
         // update the movement appropriately
         ship.moveStop();
 
-        if (userInput.getMouseX() < ship.getX() - 1) {
-            ship.moveLeft();
-        } else if (userInput.getMouseX() > ship.getX() + 1) {
-            ship.moveRight();
+
+        if (mouseControls) {
+            if (userInput.getMouseX() < ship.getX() - 1) {
+                ship.moveLeft();
+            } else if (userInput.getMouseX() > ship.getX() + 1) {
+                ship.moveRight();
+            }
+
+            // if we're pressing fire, attempt to fire
+            if (userInput.isMouseClick()) {
+                ship.tryToFire();
+            }
         }
 
-        // if we're pressing fire, attempt to fire
-        if (userInput.isMouseClick()) {
-            ship.tryToFire();
+        if (keyboardControls) {
+            if ((userInput.isLeftPressed()) && (!userInput.isRightPressed())) {
+                ship.moveLeft();
+            } else if ((userInput.isRightPressed()) && (!userInput.isLeftPressed())) {
+                ship.moveRight();
+            }
+
+            // if we're pressing fire, attempt to fire
+            if (userInput.isFirePressed()) {
+                ship.tryToFire();
+            }
         }
     }
 
