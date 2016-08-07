@@ -66,6 +66,7 @@ public class GameView extends Canvas {
         // so we can respond to key pressed
         addKeyListener(userInput.getKeyInputHandler());
         addMouseListener(userInput.getMouseInputHandler());
+        addMouseMotionListener(userInput.getMouseInputHandler());
 
         // request the focus so key events come to us
         requestFocus();
@@ -82,11 +83,7 @@ public class GameView extends Canvas {
 
 
 
-    public void moveAndDrawGraphics(long lastLoopTime, GOShip ship, ArrayList<GOEnemy> enemies, ArrayList<GOBullet> bullets) {
-        // work out how long its been since the last update, this will be used to calculate how far the gameObjects
-        // should move this loop
-        long delta = System.currentTimeMillis() - lastLoopTime;
-        lastLoopTime = System.currentTimeMillis();
+    public void drawGameObjects(GOShip ship, ArrayList<GOEnemy> enemies, ArrayList<GOBullet> bullets) {
 
         // Get hold of a graphics context for the accelerated
         // surface and blank it out
@@ -94,27 +91,23 @@ public class GameView extends Canvas {
         g.setColor(Color.black);
         g.fillRect(0, 0, Game.MAX_X, Game.MAX_Y);
 
-        // cycle round asking each gameObject to move and draw itself
-        if (userInput.isWaitingForKeyPress()) {
-            delta = 0;
-        }
-        ship.move(delta);
         ship.draw(g);
         for (GOEnemy enemy : enemies){
-            enemy.move(delta);
             enemy.draw(g);
         }
         for (GOBullet bullet : bullets){
-            bullet.move(delta);
             bullet.draw(g);
         }
 
         // if we're waiting for an "any key" press then draw the current message
         if (userInput.isWaitingForKeyPress()) {
             g.setColor(Color.white);
-            g.drawString(message, (Game.MAX_X - g.getFontMetrics().stringWidth(message)) / 2, Game.MAX_Y / 2 - Game.SCREEN_EDGE_INNER_BUFFER);
+            g.drawString(message,
+                    (Game.MAX_X - g.getFontMetrics().stringWidth(message)) / 2,
+                    Game.MAX_Y / 2 - Game.SCREEN_EDGE_INNER_BUFFER);
             g.drawString(USER_INPUT_PROMPT,
-                    (Game.MAX_X - g.getFontMetrics().stringWidth("Press any key to start, Press ESC to quit")) / 2, Game.MAX_Y / 2);
+                    (Game.MAX_X - g.getFontMetrics().stringWidth("Press any key to start, Press ESC to quit")) / 2,
+                    Game.MAX_Y / 2);
         }
 
         // finally, we've completed drawing so clear up the graphics and flip the buffer over

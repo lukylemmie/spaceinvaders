@@ -4,7 +4,6 @@ import spaceinvaders.gameObjects.GOBullet;
 import spaceinvaders.gameObjects.GOEnemy;
 import spaceinvaders.gameObjects.GOShip;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -55,7 +54,7 @@ public class Game {
         enemies.clear();
         bullets.clear();
         // create the player ship and place it roughly in the center of the screen
-        ship = new GOShip(this, "sprites/ship.gif", (MAX_X - SCREEN_EDGE_INNER_BUFFER) / 2, MAX_Y - SCREEN_EDGE_INNER_BUFFER);
+        ship = new GOShip(this, "sprites/ship.gif", MAX_X / 2, MAX_Y - SCREEN_EDGE_INNER_BUFFER);
         enemyFormation = new EnemyFormation(this, 1);
     }
 
@@ -74,17 +73,34 @@ public class Game {
     public void gameLoop() {
         // keep looping round til the game ends
         while (gameRunning) {
-            for(GOBullet bullet : bullets){
-                if (bullet.isOffScreen()) {
-                    removeBullets.add(bullet);
-                }
-            }
-            gameView.moveAndDrawGraphics(lastLoopTime, ship, enemies, bullets);
+            moveGameObjects();
+            gameView.drawGameObjects(ship, enemies, bullets);
             checkForCollisions();
             processUserInput();
             sleepForFPS();
 
         }
+    }
+
+    public void moveGameObjects(){
+        // work out how long its been since the last update, this will be used to calculate how far the gameObjects
+        // should move this loop
+        long delta = System.currentTimeMillis() - lastLoopTime;
+        lastLoopTime = System.currentTimeMillis();
+
+        if (!userInput.isWaitingForKeyPress()) {
+            ship.move(delta);
+            for (GOEnemy enemy : enemies) {
+                enemy.move(delta);
+            }
+            for (GOBullet bullet : bullets) {
+                bullet.move(delta);
+                if (bullet.isOffScreen()) {
+                    removeBullets.add(bullet);
+                }
+            }
+        }
+
     }
 
     private void sleepForFPS() {

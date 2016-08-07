@@ -10,6 +10,9 @@ public class UserInput {
     private boolean leftPressed = false;
     private boolean rightPressed = false;
     private boolean firePressed = false;
+    private int mouseX;
+    private int mouseY;
+    private boolean mouseClick = false;
     private Game game;
     private KeyInputHandler keyInputHandler;
     private MouseInputHandler mouseInputHandler;
@@ -29,6 +32,7 @@ public class UserInput {
         leftPressed = false;
         rightPressed = false;
         firePressed = false;
+        mouseClick = false;
     }
 
     public boolean isWaitingForKeyPress() {
@@ -57,6 +61,14 @@ public class UserInput {
 
     public void waitForKeyPress() {
         waitingForKeyPress = true;
+    }
+
+    public int getMouseX(){
+        return mouseX;
+    }
+
+    public int getMouseY(){
+        return mouseY;
     }
 
     public class KeyInputHandler extends KeyAdapter {
@@ -135,13 +147,20 @@ public class UserInput {
     public class MouseInputHandler extends MouseAdapter {
 
         public void mouseMoved(MouseEvent e) {
-            System.out.println("X : " + e.getX());
-            System.out.println("Y : " + e.getY());
+            mouseX = e.getX();
+            mouseY = e.getY();
         }
 
         public void mouseDragged(MouseEvent e) {
             //do something
         }
 
+        public void mouseClicked(MouseEvent e) {
+            mouseClick = true;
+        }
+
+        public void mousePressed(MouseEvent e) {
+            mouseClick = true;
+        }
     }
 }
